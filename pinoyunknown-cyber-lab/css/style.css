@@ -1,0 +1,125 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  background: black;
+  color: #00ff9c;
+  font-family: monospace;
+  height: 100%;
+  overflow: hidden;
+}
+
+.hidden { display: none; }
+
+/* MATRIX */
+#matrix {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+
+/* BOOT */
+#boot-screen {
+  position: fixed;
+  inset: 0;
+  background: black;
+  z-index: 2;
+  padding: 20px;
+}
+
+#boot-screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.03),
+    rgba(255,255,255,0.03) 1px,
+    transparent 2px,
+    transparent 3px
+  );
+  animation: flicker 0.15s infinite;
+}
+
+@keyframes flicker {
+  0% { opacity: 0.15; }
+  50% { opacity: 0.25; }
+  100% { opacity: 0.15; }
+}
+
+/* APP */
+nav {
+  padding: 15px;
+  border-bottom: 1px solid #00ff9c;
+}
+
+.logo {
+  font-weight: bold;
+}
+
+#map {
+  display: flex;
+  gap: 20px;
+  padding: 40px;
+}
+
+.node {
+  padding: 15px 22px;
+  border: 1px solid #00ff9c;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.node:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 15px #00ff9c;
+}
+
+.node.locked {
+  opacity: 0.35;
+  pointer-events: none;
+  border-style: dashed;
+}
+
+.node.locked::after {
+  content: "🔒";
+  position: absolute;
+  margin-left: 8px;
+}
+
+.node.active {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 5px #00ff9c; }
+  50% { box-shadow: 0 0 20px #00ff9c; }
+  100% { box-shadow: 0 0 5px #00ff9c; }
+}
+
+/* TERMINAL */
+#terminal {
+  padding: 20px;
+}
+
+#output {
+  height: 60vh;
+  overflow-y: auto;
+}
+
+#cmd {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #00ff9c;
+  outline: none;
+}
+
+.terminal-line {
+  animation: glitch 0.15s;
+}
+
+@keyframes glitch {
+  0% { text-shadow: 1px 0 red; }
+  50% { text-shadow: -1px 0 lime; }
+  100% { text-shadow: none; }
+}
