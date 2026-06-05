@@ -3,20 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CYBER ACADEMY SAAS // PINOYUNKNOWN</title>
+<title>Cyber Academy SaaS PRO // PinoyUnknown</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
 body {
   margin: 0;
-  font-family: "Fira Code", monospace;
+  font-family: monospace;
   background: black;
   color: #00ff66;
   overflow: hidden;
 }
 
-/* MATRIX */
+/* MATRIX BACKGROUND */
 canvas {
   position: fixed;
   inset: 0;
@@ -27,7 +27,7 @@ canvas {
 #hud {
   position: fixed;
   inset: 0;
-  z-index: 2;
+  z-index: 1;
   pointer-events: none;
   background:
     linear-gradient(rgba(0,255,102,0.05) 1px, transparent 1px),
@@ -35,76 +35,59 @@ canvas {
   background-size: 40px 40px;
 }
 
-/* BOOT */
-#boot {
-  position: fixed;
-  inset: 0;
-  background: black;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-#bootText {
-  white-space: pre-line;
-  font-size: 13px;
-}
-
-/* MAIN */
+/* LAYOUT */
 #app {
-  display: none;
   position: relative;
   z-index: 2;
-  padding: 15px;
-}
-
-/* LAYOUT */
-.grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  height: 100vh;
 }
 
-/* BOX */
-.box {
+/* MAP */
+#map {
+  border-right: 1px solid #0f3;
+  padding: 10px;
+}
+
+.node {
   border: 1px solid #0f3;
   padding: 10px;
-  background: rgba(0,255,102,0.05);
+  margin: 10px 0;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
-/* BUTTON */
-button {
-  background: black;
-  border: 1px solid #0f3;
-  color: #00ff66;
-  padding: 5px;
-  cursor: pointer;
+.node:hover {
+  background: rgba(0,255,102,0.1);
 }
 
 /* TERMINAL */
 #terminal {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  background: rgba(0,0,0,0.9);
-  border-top: 1px solid #0f3;
   padding: 10px;
-  z-index: 3;
 }
 
 #out {
-  height: 120px;
+  height: 60vh;
   overflow-y: auto;
-  font-size: 12px;
+  border-bottom: 1px solid #0f3;
 }
 
-#cmd {
+input {
   width: 100%;
   background: black;
   border: none;
   color: #00ff66;
+  padding: 10px;
   outline: none;
+}
+
+/* AI PANEL */
+#ai {
+  border-top: 1px solid #0f3;
+  padding: 10px;
+  height: 25vh;
+  overflow-y: auto;
 }
 </style>
 </head>
@@ -114,48 +97,30 @@ button {
 <canvas id="matrix"></canvas>
 <div id="hud"></div>
 
-<!-- BOOT -->
-<div id="boot"><pre id="bootText"></pre></div>
-
-<!-- APP -->
 <div id="app">
 
-  <h3>CYBER ACADEMY SAAS</h3>
-  <div>USER: PINOYUNKNOWN</div>
+  <!-- LEFT: MAP -->
+  <div id="map">
+    <h3>CYBER LAB MAP</h3>
 
-  <div class="grid">
+    <div class="node" onclick="openLab('node1')">NODE 01 - Beginner Lab</div>
+    <div class="node" onclick="openLab('node2')">NODE 02 - Network Scan</div>
+    <div class="node" onclick="openLab('node3')">NODE 03 - Encryption Lab</div>
+    <div class="node" onclick="openLab('boss')">NODE 04 - AI FIREWALL (BOSS)</div>
 
-    <div class="box">
-      <h4>AI MISSION GENERATOR</h4>
-      <button onclick="generateMission()">Generate Mission</button>
-      <div id="mission">No mission loaded</div>
+    <div id="ai">
+      🤖 AI TUTOR:
+      <div id="aiText">Select a node to get guidance.</div>
     </div>
-
-    <div class="box">
-      <h4>MULTIPLAYER LOBBY (SIMULATED)</h4>
-      <div id="lobby">Players online: 3</div>
-      <button onclick="joinRoom()">Join Room</button>
-    </div>
-
-    <div class="box">
-      <h4>XP SYSTEM</h4>
-      XP: <span id="xp">0</span><br>
-      Rank: <span id="rank">Rookie Analyst</span>
-    </div>
-
-    <div class="box">
-      <h4>TRAINING MODULE</h4>
-      <div id="training">Awaiting mission...</div>
-    </div>
-
   </div>
 
-</div>
+  <!-- RIGHT: TERMINAL -->
+  <div id="terminal">
+    <h3>TERMINAL LAB</h3>
+    <div id="out">Welcome to Cyber Academy SaaS</div>
+    <input id="cmd" placeholder="enter command..." disabled>
+  </div>
 
-<!-- TERMINAL -->
-<div id="terminal">
-  <div id="out">system ready...</div>
-  <input id="cmd" placeholder="command..." disabled>
 </div>
 
 <script>
@@ -182,8 +147,7 @@ function draw(){
   ctx.font = "14px monospace";
 
   for(let i=0;i<drops.length;i++){
-    const t = chars[Math.floor(Math.random()*chars.length)];
-    ctx.fillText(t,i*14,drops[i]*14);
+    ctx.fillText(chars[Math.floor(Math.random()*chars.length)], i*14, drops[i]*14);
 
     if(drops[i]*14 > canvas.height && Math.random()>0.975){
       drops[i]=0;
@@ -195,115 +159,118 @@ function draw(){
 }
 draw();
 
-/* SYSTEM STATE */
+/* STATE */
+let currentLab = null;
 let xp = 0;
-
-/* AI MISSION GENERATOR */
-function generateMission(){
-  const missions = [
-    "Analyze network anomaly in Node Alpha",
-    "Detect fake intrusion in system logs",
-    "Simulate firewall breach attempt",
-    "Identify encrypted traffic pattern",
-    "Trace simulated attack route"
-  ];
-
-  const m = missions[Math.floor(Math.random()*missions.length)];
-
-  document.getElementById("mission").innerText = m;
-  document.getElementById("training").innerText = "Mission Active: " + m;
-
-  addXP(20);
-}
-
-/* MULTIPLAYER SIM */
-function joinRoom(){
-  document.getElementById("lobby").innerText =
-    "Players online: " + Math.floor(Math.random()*20 + 5);
-}
-
-/* XP */
-function addXP(v){
-  xp += v;
-  document.getElementById("xp").innerText = xp;
-
-  if(xp > 100){
-    document.getElementById("rank").innerText = "Cyber Analyst";
-  }
-  if(xp > 250){
-    document.getElementById("rank").innerText = "Security Engineer";
-  }
-  if(xp > 500){
-    document.getElementById("rank").innerText = "AI Defense Specialist";
-  }
-}
 
 /* TERMINAL */
 const out = document.getElementById("out");
 const cmd = document.getElementById("cmd");
+const aiText = document.getElementById("aiText");
 
 function log(t){
   out.innerHTML += "<br>> " + t;
+  out.scrollTop = out.scrollHeight;
 }
 
-cmd.addEventListener("keydown",(e)=>{
+/* LAB SYSTEM */
+function openLab(id){
+  currentLab = id;
+  cmd.disabled = false;
+
+  if(id==="node1"){
+    aiText.innerText = "Try: ls, pwd, help";
+    log("Entered Beginner Lab");
+  }
+
+  if(id==="node2"){
+    aiText.innerText = "Try: scan, nmap, logs";
+    log("Network Scan Lab loaded");
+  }
+
+  if(id==="node3"){
+    aiText.innerText = "Try: decrypt, hash, analyze";
+    log("Encryption Lab loaded");
+  }
+
+  if(id==="boss"){
+    aiText.innerText = "AI FIREWALL is learning your behavior...";
+    log("WARNING: AI Firewall Active");
+  }
+
+  xp += 10;
+}
+
+/* AI TUTOR (REAL API READY HOOK) */
+async function askAI(question){
+  aiText.innerText = "Thinking...";
+
+  // 🔥 REAL GPT INTEGRATION POINT (BACKEND REQUIRED)
+  // DO NOT put API key here in production frontend
+  /*
+  const res = await fetch("/api/ai", {
+    method: "POST",
+    body: JSON.stringify({ question })
+  });
+  const data = await res.json();
+  return data.answer;
+  */
+
+  // SAFE SIMULATION RESPONSE (frontend fallback)
+  const fallback = {
+    "help": "Use commands like scan, nmap, ls, logs depending on lab.",
+    "scan": "Simulated scan detects virtual nodes and services.",
+    "boss": "AI Firewall adapts to repeated attack patterns."
+  };
+
+  return fallback[question] || "AI Tutor: Explore the lab to learn step by step.";
+}
+
+/* COMMAND ENGINE */
+cmd.addEventListener("keydown", async (e)=>{
   if(e.key==="Enter"){
     let v = cmd.value;
     log(v);
 
     if(v==="help"){
-      log("commands: mission | xp | join | clear");
+      log("commands: ls | scan | nmap | logs | ai | xp");
     }
 
-    if(v==="mission"){
-      generateMission();
+    else if(v==="ls"){
+      log("file1.txt  config.sys  tool.sh");
+      xp+=5;
     }
 
-    if(v==="xp"){
+    else if(v==="scan"){
+      log("Scanning virtual network...");
+      xp+=10;
+    }
+
+    else if(v==="nmap"){
+      log("Open ports detected (simulated): 22, 80, 443");
+      xp+=10;
+    }
+
+    else if(v==="logs"){
+      log("[INFO] system stable");
+      log("[WARN] anomaly detected (simulated)");
+      xp+=10;
+    }
+
+    else if(v.startsWith("ai")){
+      const q = v.replace("ai ","");
+      const ans = await askAI(q);
+      aiText.innerText = ans;
+      log("AI: " + ans);
+    }
+
+    else if(v==="xp"){
       log("XP: " + xp);
-    }
-
-    if(v==="join"){
-      joinRoom();
-    }
-
-    if(v==="clear"){
-      out.innerHTML = "";
     }
 
     cmd.value="";
   }
 });
-
-/* BOOT SEQUENCE */
-const bootLines = [
-"[BOOT] CYBER ACADEMY SAAS ENGINE",
-"[OK] loading matrix core",
-"[OK] initializing AI mission generator",
-"[OK] connecting multiplayer simulation",
-"[OK] injecting PinoyUnknown signature",
-"[OK] training modules online",
-"",
-"WELCOME TO CYBER ACADEMY"
-];
-
-let i=0;
-const bootText=document.getElementById("bootText");
-
-function boot(){
-  if(i<bootLines.length){
-    bootText.innerText += bootLines[i] + "\n";
-    i++;
-    setTimeout(boot,400);
-  } else {
-    setTimeout(()=>{
-      document.getElementById("boot").style.display="none";
-      document.getElementById("app").style.display="block";
-      document.getElementById("cmd").disabled=false;
-    },800);
-  }
-}
-boot();
 
 </script>
 
