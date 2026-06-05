@@ -1,277 +1,239 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cyber Academy SaaS PRO // PinoyUnknown</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PinoyUnknown | Cyber Labs</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
 <style>
+:root {
+  --bg: #050a0f;
+  --grid: #0aff9d22;
+  --neon: #00ff9c;
+  --cyan: #00cfff;
+  --text: #c9fff2;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
 body {
-  margin: 0;
-  font-family: monospace;
+  font-family: 'Share Tech Mono', monospace;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+/* ===== BOOT SEQUENCE ===== */
+#boot {
+  position: fixed;
+  inset: 0;
   background: black;
-  color: #00ff66;
-  overflow: hidden;
+  color: var(--neon);
+  padding: 20px;
+  font-size: 14px;
+  z-index: 9999;
 }
+#boot.hidden { display: none; }
 
-/* MATRIX BACKGROUND */
-canvas {
+/* ===== GRID BACKGROUND ===== */
+body::before {
+  content: "";
   position: fixed;
   inset: 0;
-  z-index: 0;
-}
-
-/* HUD GRID */
-#hud {
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
   background:
-    linear-gradient(rgba(0,255,102,0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,255,102,0.05) 1px, transparent 1px);
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
   background-size: 40px 40px;
+  pointer-events: none;
 }
 
-/* LAYOUT */
-#app {
-  position: relative;
-  z-index: 2;
+/* ===== HEADER ===== */
+header {
+  padding: 20px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #00ff9c33;
+}
+
+header h1 {
+  color: var(--neon);
+  text-shadow: 0 0 10px var(--neon);
+}
+
+header nav a {
+  margin-left: 20px;
+  color: var(--cyan);
+  text-decoration: none;
+}
+
+/* ===== HERO ===== */
+.hero {
+  padding: 80px 30px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.hero h2 {
+  font-size: 48px;
+  color: var(--neon);
+}
+
+.hero p {
+  margin-top: 20px;
+  max-width: 600px;
+  opacity: 0.85;
+}
+
+/* ===== LAB GRID ===== */
+.labs {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  height: 100vh;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+  padding: 40px 30px;
+  max-width: 1200px;
+  margin: auto;
 }
 
-/* MAP */
-#map {
-  border-right: 1px solid #0f3;
-  padding: 10px;
-}
-
-.node {
-  border: 1px solid #0f3;
-  padding: 10px;
-  margin: 10px 0;
+.lab {
+  background: #08131b;
+  border: 1px solid #00ff9c44;
+  padding: 20px;
+  transition: 0.3s;
   cursor: pointer;
-  transition: 0.2s;
 }
 
-.node:hover {
-  background: rgba(0,255,102,0.1);
+.lab:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 20px #00ff9c55;
 }
 
-/* TERMINAL */
-#terminal {
-  padding: 10px;
+.lab h3 {
+  color: var(--cyan);
+  margin-bottom: 10px;
 }
 
-#out {
-  height: 60vh;
+/* ===== TERMINAL ===== */
+.terminal {
+  background: black;
+  padding: 20px;
+  margin: 40px auto;
+  max-width: 900px;
+  border: 1px solid var(--neon);
+}
+
+.terminal-output {
+  height: 200px;
   overflow-y: auto;
-  border-bottom: 1px solid #0f3;
+  font-size: 14px;
 }
 
-input {
+.terminal input {
   width: 100%;
   background: black;
   border: none;
-  color: #00ff66;
-  padding: 10px;
+  color: var(--neon);
   outline: none;
+  font-family: inherit;
 }
 
-/* AI PANEL */
-#ai {
-  border-top: 1px solid #0f3;
-  padding: 10px;
-  height: 25vh;
-  overflow-y: auto;
+/* ===== FOOTER ===== */
+footer {
+  text-align: center;
+  padding: 30px;
+  opacity: 0.5;
 }
 </style>
 </head>
 
 <body>
 
-<canvas id="matrix"></canvas>
-<div id="hud"></div>
+<div id="boot"></div>
 
-<div id="app">
+<header>
+  <h1>PinoyUnknown</h1>
+  <nav>
+    <a href="#">Labs</a>
+    <a href="#">Academy</a>
+    <a href="#">Profile</a>
+  </nav>
+</header>
 
-  <!-- LEFT: MAP -->
-  <div id="map">
-    <h3>CYBER LAB MAP</h3>
+<section class="hero">
+  <h2>Cyber Training Labs</h2>
+  <p>
+    Offensive security simulation platform inspired by modern cyber ranges.
+    Train. Exploit. Learn.
+  </p>
+</section>
 
-    <div class="node" onclick="openLab('node1')">NODE 01 - Beginner Lab</div>
-    <div class="node" onclick="openLab('node2')">NODE 02 - Network Scan</div>
-    <div class="node" onclick="openLab('node3')">NODE 03 - Encryption Lab</div>
-    <div class="node" onclick="openLab('boss')">NODE 04 - AI FIREWALL (BOSS)</div>
-
-    <div id="ai">
-      🤖 AI TUTOR:
-      <div id="aiText">Select a node to get guidance.</div>
-    </div>
+<section class="labs">
+  <div class="lab">
+    <h3>Web Exploitation</h3>
+    <p>SQLi, XSS, Auth bypass</p>
   </div>
-
-  <!-- RIGHT: TERMINAL -->
-  <div id="terminal">
-    <h3>TERMINAL LAB</h3>
-    <div id="out">Welcome to Cyber Academy SaaS</div>
-    <input id="cmd" placeholder="enter command..." disabled>
+  <div class="lab">
+    <h3>Network Intrusion</h3>
+    <p>Recon, pivoting, lateral movement</p>
   </div>
+  <div class="lab">
+    <h3>Linux PrivEsc</h3>
+    <p>SUID, cron, kernel flaws</p>
+  </div>
+  <div class="lab">
+    <h3>AI Firewall v2</h3>
+    <p>Adaptive cyber defense simulation</p>
+  </div>
+</section>
 
+<div class="terminal">
+  <div class="terminal-output" id="output"></div>
+  <input id="cmd" placeholder="pinoyunknown@cyberlab:~$" />
 </div>
 
+<footer>
+  © 2026 PinoyUnknown Cyber Labs
+</footer>
+
 <script>
+/* ===== BOOT SEQUENCE ===== */
+const bootLines = [
+  "Initializing PinoyUnknown Cyber Environment...",
+  "Loading kernel modules...",
+  "Detecting hardware...",
+  "Connecting to cyber grid...",
+  "Launching training labs...",
+  "System ready."
+];
 
-/* MATRIX */
-const canvas = document.getElementById("matrix");
-const ctx = canvas.getContext("2d");
+const boot = document.getElementById("boot");
 
-function resize(){
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-resize();
-window.addEventListener("resize", resize);
-
-const chars = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&*@";
-let drops = Array(Math.floor(window.innerWidth/14)).fill(1);
-
-function draw(){
-  ctx.fillStyle = "rgba(0,0,0,0.08)";
-  ctx.fillRect(0,0,canvas.width,canvas.height);
-
-  ctx.fillStyle = "#00ff66";
-  ctx.font = "14px monospace";
-
-  for(let i=0;i<drops.length;i++){
-    ctx.fillText(chars[Math.floor(Math.random()*chars.length)], i*14, drops[i]*14);
-
-    if(drops[i]*14 > canvas.height && Math.random()>0.975){
-      drops[i]=0;
-    }
-    drops[i]++;
+let i = 0;
+function bootSeq() {
+  if (i < bootLines.length) {
+    boot.innerHTML += bootLines[i] + "<br>";
+    i++;
+    setTimeout(bootSeq, 500);
+  } else {
+    setTimeout(() => boot.classList.add("hidden"), 800);
   }
-
-  requestAnimationFrame(draw);
 }
-draw();
+bootSeq();
 
-/* STATE */
-let currentLab = null;
-let xp = 0;
-
-/* TERMINAL */
-const out = document.getElementById("out");
+/* ===== TERMINAL ===== */
+const output = document.getElementById("output");
 const cmd = document.getElementById("cmd");
-const aiText = document.getElementById("aiText");
 
-function log(t){
-  out.innerHTML += "<br>> " + t;
-  out.scrollTop = out.scrollHeight;
-}
-
-/* LAB SYSTEM */
-function openLab(id){
-  currentLab = id;
-  cmd.disabled = false;
-
-  if(id==="node1"){
-    aiText.innerText = "Try: ls, pwd, help";
-    log("Entered Beginner Lab");
-  }
-
-  if(id==="node2"){
-    aiText.innerText = "Try: scan, nmap, logs";
-    log("Network Scan Lab loaded");
-  }
-
-  if(id==="node3"){
-    aiText.innerText = "Try: decrypt, hash, analyze";
-    log("Encryption Lab loaded");
-  }
-
-  if(id==="boss"){
-    aiText.innerText = "AI FIREWALL is learning your behavior...";
-    log("WARNING: AI Firewall Active");
-  }
-
-  xp += 10;
-}
-
-/* AI TUTOR (REAL API READY HOOK) */
-async function askAI(question){
-  aiText.innerText = "Thinking...";
-
-  // 🔥 REAL GPT INTEGRATION POINT (BACKEND REQUIRED)
-  // DO NOT put API key here in production frontend
-  /*
-  const res = await fetch("/api/ai", {
-    method: "POST",
-    body: JSON.stringify({ question })
-  });
-  const data = await res.json();
-  return data.answer;
-  */
-
-  // SAFE SIMULATION RESPONSE (frontend fallback)
-  const fallback = {
-    "help": "Use commands like scan, nmap, ls, logs depending on lab.",
-    "scan": "Simulated scan detects virtual nodes and services.",
-    "boss": "AI Firewall adapts to repeated attack patterns."
-  };
-
-  return fallback[question] || "AI Tutor: Explore the lab to learn step by step.";
-}
-
-/* COMMAND ENGINE */
-cmd.addEventListener("keydown", async (e)=>{
-  if(e.key==="Enter"){
-    let v = cmd.value;
-    log(v);
-
-    if(v==="help"){
-      log("commands: ls | scan | nmap | logs | ai | xp");
-    }
-
-    else if(v==="ls"){
-      log("file1.txt  config.sys  tool.sh");
-      xp+=5;
-    }
-
-    else if(v==="scan"){
-      log("Scanning virtual network...");
-      xp+=10;
-    }
-
-    else if(v==="nmap"){
-      log("Open ports detected (simulated): 22, 80, 443");
-      xp+=10;
-    }
-
-    else if(v==="logs"){
-      log("[INFO] system stable");
-      log("[WARN] anomaly detected (simulated)");
-      xp+=10;
-    }
-
-    else if(v.startsWith("ai")){
-      const q = v.replace("ai ","");
-      const ans = await askAI(q);
-      aiText.innerText = ans;
-      log("AI: " + ans);
-    }
-
-    else if(v==="xp"){
-      log("XP: " + xp);
-    }
-
-    cmd.value="";
+cmd.addEventListener("keydown", e => {
+  if (e.key === "Enter") {
+    output.innerHTML += `<div>$ ${cmd.value}</div>`;
+    output.innerHTML += `<div>command not found: ${cmd.value}</div>`;
+    cmd.value = "";
+    output.scrollTop = output.scrollHeight;
   }
 });
-
 </script>
 
 </body>
