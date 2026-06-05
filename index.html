@@ -1,205 +1,228 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>Cyber Defense Command Console</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<title>WhiteHat-CyberLab</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
 <style>
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  background: #000;
-  color: #00ff9c;
-  font-family: "Courier New", monospace;
-  height: 100vh;
-  overflow: hidden;
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:#000;
+  color:#00ffff;
+  font-family:'Share Tech Mono',monospace;
+  overflow:hidden;
 }
 
-#screen {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* ===== BOOT TERMINAL ===== */
+#boot{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
-.terminal {
-  width: 82%;
-  max-width: 1000px;
-  height: 75%;
-  border: 1px solid #00ff9c;
-  padding: 20px;
-  overflow-y: auto;
-  box-shadow: 0 0 45px rgba(0,255,156,0.25);
+.terminal{
+  width:90%;
+  max-width:1100px;
+  height:80%;
+  border:2px solid #00ffff;
+  padding:20px;
+  overflow-y:auto;
+  box-shadow:0 0 80px rgba(0,255,255,.25);
 }
 
-.line {
-  white-space: pre-wrap;
-  line-height: 1.4;
+.line{white-space:pre-wrap; line-height:1.4}
+.cursor{display:inline-block;width:10px;background:#00ffff;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* ===== MAIN ===== */
+#main{display:none;height:100vh;overflow-y:auto}
+
+header{
+  padding:30px;
+  text-align:center;
+  border-bottom:1px solid #00ffff;
 }
 
-.cursor {
-  display: inline-block;
-  width: 10px;
-  background: #00ff9c;
-  margin-left: 4px;
-  animation: blink 1s infinite;
+nav{
+  display:flex;
+  gap:20px;
+  justify-content:center;
+  border-bottom:1px solid #003;
+  padding:10px;
 }
 
-@keyframes blink {
-  0%,50% { opacity: 1; }
-  51%,100% { opacity: 0; }
+nav a{color:#00ffff;text-decoration:none}
+nav a:hover{color:#fff}
+
+.section{padding:30px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px}
+
+.card{
+  border:1px solid #00ffff;
+  padding:20px;
+  background:rgba(0,255,255,.05);
 }
 
-.header {
-  margin-bottom: 15px;
-  color: #7dffca;
+/* ===== LAB MAP ===== */
+.map{
+  display:flex;
+  gap:20px;
+  flex-wrap:wrap;
 }
+.node{
+  padding:15px;
+  border:1px solid #00ffff;
+  cursor:pointer;
+}
+.node.locked{opacity:.4}
 
-.status {
-  margin-top: 10px;
-  border-top: 1px solid #00ff9c;
-  padding-top: 10px;
-  font-size: 13px;
-  color: #9affd7;
+/* ===== AI TUTOR ===== */
+#chat{
+  border:1px solid #00ffff;
+  padding:15px;
+  height:300px;
+  overflow-y:auto;
+}
+#input{
+  width:100%;
+  background:black;
+  color:#00ffff;
+  border:1px solid #00ffff;
+  padding:10px;
 }
 </style>
 </head>
+
 <body>
 
-<div id="screen">
-  <div class="terminal" id="terminal">
-    <div class="header">
-CYBER DEFENSE OPERATIONS CONSOLE
-NODE: edge-gateway-01
-CLEARANCE: SOC-LEVEL
-    </div>
-  </div>
+<div id="boot">
+  <div class="terminal" id="term"></div>
 </div>
 
+<div id="main">
+  <header>
+    <h1>WHITEHAT-CYBERLAB</h1>
+    <p>Defensive Cybersecurity Training Platform</p>
+  </header>
+
+  <nav>
+    <a href="#labs">Labs</a>
+    <a href="#tutor">AI Tutor</a>
+    <a href="#academy">Academy</a>
+  </nav>
+
+  <section class="section" id="labs">
+    <h2>Cyber Defense Lab Map</h2>
+    <div class="map">
+      <div class="node">Log Analysis</div>
+      <div class="node">Firewall Hardening</div>
+      <div class="node">SOC Incident</div>
+      <div class="node locked">Advanced Threat (Locked)</div>
+    </div>
+  </section>
+
+  <section class="section" id="tutor">
+    <h2>AI Cyber Tutor</h2>
+    <div id="chat"></div>
+    <input id="input" placeholder="Ask about cyber defense..." />
+  </section>
+
+  <section class="section" id="academy">
+    <h2>Learning Tracks</h2>
+    <div class="grid">
+      <div class="card">Linux Hardening</div>
+      <div class="card">Network Defense</div>
+      <div class="card">SOC Operations</div>
+      <div class="card">Threat Intelligence</div>
+    </div>
+  </section>
+</div>
+
+<audio id="beep" src="https://assets.mixkit.co/sfx/preview/mixkit-computer-start-2574.mp3"></audio>
+<audio id="type" src="https://assets.mixkit.co/sfx/preview/mixkit-keyboard-typing-1386.mp3"></audio>
+
 <script>
-const terminal = document.getElementById("terminal");
+const t=document.getElementById("term");
+const beep=document.getElementById("beep");
+const typeS=document.getElementById("type");
 
-function addLine(text = "") {
-  const div = document.createElement("div");
-  div.className = "line";
-  div.textContent = text;
-  terminal.appendChild(div);
-  terminal.scrollTop = terminal.scrollHeight;
+function add(txt){
+  const d=document.createElement("div");
+  d.className="line";
+  d.textContent=txt;
+  t.appendChild(d);
+  t.scrollTop=t.scrollHeight;
 }
 
-function typeCommand(command, callback) {
-  const line = document.createElement("div");
-  line.className = "line";
-  terminal.appendChild(line);
-
-  let i = 0;
-  const cursor = document.createElement("span");
-  cursor.className = "cursor";
-
-  function type() {
-    if (i < command.length) {
-      line.textContent += command.charAt(i);
-      i++;
-      terminal.scrollTop = terminal.scrollHeight;
-      setTimeout(type, 40);
-    } else {
-      line.appendChild(cursor);
-      setTimeout(() => {
-        cursor.remove();
-        callback && callback();
-      }, 600);
+function type(txt,cb){
+  const d=document.createElement("div");
+  d.className="line";
+  t.appendChild(d);
+  let i=0;
+  const c=document.createElement("span");
+  c.className="cursor";
+  (function run(){
+    if(i<txt.length){
+      d.textContent+=txt[i++];
+      if(i%4===0)typeS.play();
+      setTimeout(run,25);
+    }else{
+      d.appendChild(c);
+      setTimeout(()=>{c.remove();cb&&cb()},300);
     }
-  }
-  type();
+  })();
 }
 
-function output(lines, delay = 300) {
-  let i = 0;
-  const interval = setInterval(() => {
-    addLine(lines[i]);
-    i++;
-    if (i >= lines.length) clearInterval(interval);
-  }, delay);
-}
-
-const sequence = [
-  () => addLine("[BOOT] Initializing hardened kernel modules..."),
-  () => addLine("[BOOT] Loading network inspection drivers..."),
-  () => addLine("[BOOT] Establishing secure telemetry channels..."),
-  () => addLine("[OK] System integrity verified."),
-  () => addLine(""),
-
-  () => typeCommand("root@defense-node:~# nmap -sS -Pn 10.0.0.0/24", () =>
-    output([
-      "Starting Nmap 7.94",
-      "10.0.0.5   PORT 443/tcp   open  https",
-      "10.0.0.7   PORT 22/tcp    open  ssh",
-      "10.0.0.12  PORT 8080/tcp  filtered",
-      "Scan completed: 256 hosts analyzed"
-    ])
-  ),
-
-  () => typeCommand("root@defense-node:~# netstat -antp | grep ESTABLISHED", () =>
-    output([
-      "tcp  ESTABLISHED 10.0.0.5:443  203.0.113.45:53122",
-      "tcp  ESTABLISHED 10.0.0.5:443  203.0.113.45:53124",
-      "tcp  ESTABLISHED 10.0.0.7:22   198.51.100.19:49812"
-    ])
-  ),
-
-  () => typeCommand("root@defense-node:~# tcpdump -nn dst port 443", () =>
-    output([
-      "IP 203.0.113.45 > 10.0.0.5: Flags [S]",
-      "IP 203.0.113.45 > 10.0.0.5: Flags [S]",
-      "Anomaly: repeated SYN packets detected"
-    ])
-  ),
-
-  () => typeCommand("root@defense-node:~# iptables -A INPUT -s 203.0.113.45 -j DROP", () =>
-    output([
-      "Firewall rule applied successfully",
-      "Traffic from 203.0.113.45 blocked"
-    ])
-  ),
-
-  () => typeCommand("root@defense-node:~# whois 203.0.113.45", () =>
-    output([
-      "OrgName: ExampleNet Services",
-      "Country: US",
-      "Abuse Contact: abuse@example.net"
-    ])
-  ),
-
-  () => addLine(""),
-  () => addLine("[STATUS] Threat source isolated."),
-  () => addLine("[STATUS] Network stability restored."),
-  () => addLine("[STATUS] Continuous monitoring active."),
-
-  () => {
-    const status = document.createElement("div");
-    status.className = "status";
-    status.textContent = `
-ACTIVE CONNECTIONS: 128
-BLOCKED SOURCES: 14
-FIREWALL RULES: 87
-ALERT LEVEL: LOW
-VOICE CHANNEL: READY (Push-to-Talk)
-    `;
-    terminal.appendChild(status);
-  }
+beep.play();
+const boot=[
+"[CYBER-KERNEL] Initializing secure environment...",
+"[IDENTITY] Operator: PinoyUnknown",
+"[GROUP] Affiliation: Team WhiteHat",
+"[MODULE] Loading cyberpunk terminal UI...",
+"[NET] Web crawling engine online...",
+"[NET] Mapping network topology ██████████",
+"[SEC] Enabling firewall analysis modules...",
+"[SEC] Activating threat monitoring...",
+"[SYS] Environment hardened",
+"[BOOT] Launching WhiteHat-CyberLab..."
 ];
+let i=0;
+(function bootSeq(){
+  if(i<boot.length)type(boot[i++],bootSeq);
+  else setTimeout(()=>{
+    document.getElementById("boot").style.display="none";
+    document.getElementById("main").style.display="block";
+    document.body.style.overflow="auto";
+  },2000);
+})();
 
-let step = 0;
-function runSequence() {
-  if (step < sequence.length) {
-    sequence[step]();
-    step++;
-    setTimeout(runSequence, 1200);
+/* AI TUTOR */
+const chat=document.getElementById("chat");
+const input=document.getElementById("input");
+const answers={
+  firewall:"Firewalls protect systems by filtering traffic based on rules.",
+  soc:"SOC teams monitor, detect, and respond to security incidents.",
+  linux:"Linux hardening includes permissions, updates, and service control.",
+  incident:"Incident response includes detection, containment, eradication, recovery."
+};
+
+input.onkeydown=e=>{
+  if(e.key==="Enter"){
+    const q=input.value.toLowerCase();
+    chat.innerHTML+=`<div>> ${q}</div>`;
+    let r="Focus on defensive security practices.";
+    for(let k in answers)if(q.includes(k))r=answers[k];
+    chat.innerHTML+=`<div>[AI] ${r}</div>`;
+    input.value="";
+    chat.scrollTop=chat.scrollHeight;
   }
-}
-
-runSequence();
+};
 </script>
 
 </body>
