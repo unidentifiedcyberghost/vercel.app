@@ -1,91 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
 <title>WhiteHat-CyberLab</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-  :root{
-    --bg:#050608;
-    --cyan:#6ef3ff;
-    --green:#27ff7a;
-    --muted:#7aa7ad;
-    --panel:#0b1014;
-    --line:rgba(110,243,255,.25);
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%;margin:0;background:var(--bg);color:var(--cyan);font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;overflow:hidden}
-  /* Scanlines + subtle noise */
-  body::before{
-    content:"";position:fixed;inset:0;pointer-events:none;
-    background:
-      repeating-linear-gradient(180deg, rgba(255,255,255,.02) 0 1px, transparent 1px 3px),
-      radial-gradient(1200px 600px at 50% 120%, rgba(110,243,255,.06), transparent 60%);
-    mix-blend-mode:overlay;
-  }
+:root{
+  --bg:#04070a;
+  --panel:#0b1116;
+  --cyan:#6ff6ff;
+  --teal:#27e8c4;
+  --green:#3bff9a;
+  --muted:#7fa6ad;
+  --line:rgba(111,246,255,.25);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--cyan);font-family:ui-monospace,Menlo,Consolas,monospace;overflow:hidden}
 
-  /* Boot container */
-  #boot{
-    position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
-  }
-  .boot-grid{
-    width:min(1100px,92vw);height:min(680px,88vh);
-    display:grid;grid-template-columns:repeat(12,1fr);grid-template-rows:repeat(8,1fr);gap:12px;
-  }
-  .term{
-    background:linear-gradient(180deg, #0b1216, #070b0e);
-    border:1px solid var(--line);border-radius:8px;
-    box-shadow:0 0 0 1px rgba(0,0,0,.6), 0 0 24px rgba(110,243,255,.12);
-    padding:10px;display:flex;flex-direction:column;opacity:0;transform:scale(.98);
-    animation:pop .6s ease forwards;
-  }
-  @keyframes pop{to{opacity:1;transform:none}}
-  .titlebar{
-    display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px;margin-bottom:6px
-  }
-  .dot{width:8px;height:8px;border-radius:50%;background:#2a3b40}
-  .screen{
-    flex:1;overflow:hidden;white-space:pre-wrap;font-size:12px;line-height:1.45;color:var(--cyan)
-  }
-  .cursor::after{content:"▊";animation:blink 1s steps(1) infinite}
-  @keyframes blink{50%{opacity:0}}
+/* CRT + scanlines */
+body:before{
+  content:"";position:fixed;inset:0;pointer-events:none;
+  background:
+    repeating-linear-gradient(180deg,rgba(255,255,255,.02) 0 1px,transparent 1px 3px),
+    radial-gradient(1000px 600px at 50% 120%,rgba(39,232,196,.08),transparent 60%);
+  mix-blend-mode:overlay;
+}
 
-  /* Landing */
-  #app{position:fixed;inset:0;display:none;grid-template-rows:auto 1fr auto}
-  header{
-    padding:12px 16px;border-bottom:1px solid var(--line);
-    display:flex;align-items:center;justify-content:space-between;background:rgba(5,6,8,.8);backdrop-filter:blur(6px)
-  }
-  header .brand{font-weight:700;letter-spacing:.12em}
-  header .profile{color:var(--muted);font-size:12px}
-  main{
-    display:grid;grid-template-columns:280px 1fr;gap:16px;padding:16px
-  }
-  .panel{
-    background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px
-  }
-  .map{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-  .node{
-    padding:10px;border:1px dashed var(--line);border-radius:8px;cursor:pointer;
-    transition:.2s;background:linear-gradient(180deg,#0c1418,#090f13)
-  }
-  .node:hover{box-shadow:0 0 18px rgba(110,243,255,.2)}
-  .terminal{
-    height:100%;display:flex;flex-direction:column
-  }
-  .termout{flex:1;overflow:auto;font-size:13px}
-  .prompt{display:flex;gap:8px}
-  .prompt input{
-    flex:1;background:#040607;color:var(--green);border:1px solid var(--line);
-    border-radius:6px;padding:8px;font-family:inherit
-  }
-  footer{
-    padding:10px 16px;border-top:1px solid var(--line);color:var(--muted);font-size:11px;
-    display:flex;justify-content:space-between
-  }
-  a{color:var(--cyan);text-decoration:none}
+/* BOOT */
+#boot{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+.boot-grid{
+  width:min(1100px,94vw);
+  height:min(720px,90vh);
+  display:grid;
+  grid-template-columns:repeat(12,1fr);
+  grid-template-rows:repeat(8,1fr);
+  gap:10px;
+}
+.term{
+  background:linear-gradient(180deg,#0b1217,#06090c);
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:8px;
+  font-size:11px;
+  opacity:0;
+  animation:pop .5s ease forwards;
+}
+@keyframes pop{to{opacity:1}}
+.term-header{color:var(--muted);font-size:10px;margin-bottom:4px}
+.screen{white-space:pre-wrap;line-height:1.4}
+
+/* APP */
+#app{display:none;position:fixed;inset:0;grid-template-rows:auto 1fr auto}
+header{
+  padding:10px 16px;
+  display:flex;
+  justify-content:space-between;
+  border-bottom:1px solid var(--line);
+  background:rgba(4,7,10,.85);
+}
+.brand{letter-spacing:.12em;font-weight:700}
+main{display:grid;grid-template-columns:260px 1fr;gap:14px;padding:14px}
+.panel{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:12px;
+}
+.lab{border:1px dashed var(--line);padding:8px;border-radius:6px;margin-bottom:8px;font-size:12px}
+.lab:hover{box-shadow:0 0 12px rgba(111,246,255,.25)}
+.terminal{display:flex;flex-direction:column;height:100%}
+.out{flex:1;overflow:auto;font-size:12px}
+.prompt{display:flex;gap:6px}
+.prompt input{
+  flex:1;background:#020405;color:var(--green);
+  border:1px solid var(--line);border-radius:5px;padding:6px
+}
+
+/* Ticker */
+#ticker{
+  white-space:nowrap;
+  overflow:hidden;
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  padding:6px 0;
+  font-size:11px;
+}
+.ticker-track{
+  display:inline-block;
+  animation:scroll 25s linear infinite;
+}
+@keyframes scroll{from{transform:translateX(100%)}to{transform:translateX(-100%)}}
+
+/* Footer */
+footer{
+  font-size:11px;
+  color:var(--muted);
+  display:flex;
+  justify-content:space-between;
+  padding:8px 14px;
+  border-top:1px solid var(--line);
+}
+a{color:var(--cyan);text-decoration:none}
 </style>
 </head>
+
 <body>
 
 <!-- BOOT -->
@@ -95,173 +114,128 @@
 
 <!-- APP -->
 <section id="app">
-  <header>
-    <div class="brand">WhiteHat-CyberLab</div>
-    <div class="profile">Operator: Team WhiteHat · Alias: PinoyUnknown</div>
-  </header>
-  <main>
-    <aside class="panel">
-      <h4>Blue-Team Labs</h4>
-      <div class="map">
-        <div class="node">Network Defense</div>
-        <div class="node">Web Hardening</div>
-        <div class="node">SOC Analysis</div>
-        <div class="node">Threat Intel</div>
-        <div class="node">Endpoint Security</div>
-        <div class="node">Cloud Defense</div>
-      </div>
-    </aside>
-    <section class="panel terminal">
-      <div class="termout" id="out"></div>
-      <div class="prompt">
-        <span>$</span>
-        <input id="cmd" placeholder="type 'help'"/>
-      </div>
-    </section>
-  </main>
-  <footer>
-    <span>github: <a href="https://github.com/unidentifiedcyberghost" target="_blank">unidentifiedcyberghost</a></span>
-    <span>instagram: <a href="https://www.instagram.com/pinoyunknown" target="_blank">pinoyunknown</a></span>
-  </footer>
+<header>
+  <div class="brand">WhiteHat-CyberLab</div>
+  <div class="muted">Operator: Team WhiteHat · Alias: PinoyUnknown</div>
+</header>
+
+<div id="ticker">
+  <div class="ticker-track" id="tickerTrack"></div>
+</div>
+
+<main>
+  <aside class="panel">
+    <b>Blue-Team Labs</b><br><br>
+    <div class="lab">Network Defense</div>
+    <div class="lab">Web Hardening</div>
+    <div class="lab">SOC Analysis</div>
+    <div class="lab">Threat Intelligence</div>
+    <div class="lab">Endpoint Security</div>
+    <div class="lab">Cloud Defense</div>
+  </aside>
+
+  <section class="panel terminal">
+    <div class="out" id="out"></div>
+    <div class="prompt">
+      <span>$</span>
+      <input id="cmd" placeholder="type help">
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span>github: <a href="https://github.com/unidentifiedcyberghost" target="_blank">unidentifiedcyberghost</a></span>
+  <span>instagram: <a href="https://www.instagram.com/pinoyunknown" target="_blank">pinoyunknown</a></span>
+</footer>
 </section>
 
 <script>
-/* -------------------- Anti-debug friction (non-blocking) -------------------- */
-(function(){
-  document.addEventListener('contextmenu', e=>e.preventDefault());
-  document.addEventListener('keydown', e=>{
-    if((e.ctrlKey||e.metaKey) && ['s','u','p'].includes(e.key.toLowerCase())) e.preventDefault();
-    if(e.key==='F12') e.preventDefault();
-  });
-})();
-
-/* -------------------- Audio (no external files) -------------------- */
-const audioCtx = new (window.AudioContext||window.webkitAudioContext)();
-function beep(freq=880, dur=0.05){
-  const o=audioCtx.createOscillator(), g=audioCtx.createGain();
-  o.frequency.value=freq; o.connect(g); g.connect(audioCtx.destination);
-  g.gain.value=.03; o.start(); setTimeout(()=>o.stop(), dur*1000);
-}
-function typeTick(){beep(1200,.01)}
-
-/* -------------------- Boot terminals -------------------- */
-const bootGrid = document.getElementById('bootGrid');
-const layouts = [
-  {c:"1 / span 6", r:"1 / span 4"},
-  {c:"7 / span 6", r:"1 / span 3"},
-  {c:"7 / span 6", r:"4 / span 3"},
-  {c:"1 / span 4", r:"5 / span 4"},
-  {c:"5 / span 4", r:"5 / span 4"},
-  {c:"9 / span 4", r:"7 / span 2"}
-];
-const bootLines = [
-  "[ INIT ] WhiteHat Kernel 6.7.x loading",
-  "[ OK   ] entropy pool initialized",
-  "[ INFO ] memory map established",
-  "[ INFO ] cpu features detected",
-  "[ INFO ] io scheduler online",
-  "[ NET  ] interfaces enumerated",
-  "[ NET  ] resolver ready",
-  "[ WEB  ] crawler threads warming",
-  "[ WEB  ] fingerprints queued",
-  "[ SEC  ] policy engine armed",
-  "[ SEC  ] anomaly detectors online",
-  "[ MAP  ] topology graph building",
-  "[ MAP  ] edges discovered",
-  "[ MAP  ] nodes indexed",
-  "[ OK   ] blue-team modules loaded",
-  "[ OK   ] training environment ready",
-  "Operator: PinoyUnknown",
-  "Team: WhiteHat"
+/* ---------------- BOOT SYSTEM ---------------- */
+const grid=document.getElementById("bootGrid");
+const layouts=[
+  ["1 / span 6","1 / span 4"],
+  ["7 / span 6","1 / span 3"],
+  ["7 / span 6","4 / span 3"],
+  ["1 / span 4","5 / span 4"],
+  ["5 / span 4","5 / span 4"],
+  ["9 / span 4","7 / span 2"]
 ];
 
-function createTerm(idx){
-  const t=document.createElement('div');
-  t.className='term';
-  t.style.gridColumn=layouts[idx].c;
-  t.style.gridRow=layouts[idx].r;
-  t.innerHTML=`
-    <div class="titlebar">
-      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-      <span>tty${idx}</span>
-    </div>
-    <div class="screen cursor"></div>`;
-  bootGrid.appendChild(t);
-  return t.querySelector('.screen');
+function term(i){
+  const d=document.createElement("div");
+  d.className="term";
+  d.style.gridColumn=layouts[i][0];
+  d.style.gridRow=layouts[i][1];
+  d.innerHTML=`<div class="term-header">tty${i}</div><div class="screen"></div>`;
+  grid.appendChild(d);
+  return d.querySelector(".screen");
 }
 
-async function typeLines(el, lines, delay=120){
-  for(const l of lines){
-    for(const ch of (l+"\n")){
-      el.textContent+=ch; typeTick();
-      await new Promise(r=>setTimeout(r, delay));
-    }
-    beep(440,.02);
-    await new Promise(r=>setTimeout(r, 300));
-  }
-}
+const logs=[
+  "Kernel boot sequence initiated",
+  "Memory mapping complete",
+  "CPU features detected",
+  "Entropy pool seeded",
+  "Network interfaces online",
+  "DNS resolver loaded",
+  "Routing table built",
+  "Traffic inspection modules ready",
+  "Audit daemon started",
+  "Policy engine armed",
+  "Blue-team defensive stack loaded",
+  "Operator authenticated: PinoyUnknown",
+  "Team WhiteHat confirmed"
+];
 
-(async function boot(){
-  const terms = layouts.map((_,i)=>createTerm(i));
-  // spread content across terminals
-  const chunks = terms.map(()=>[]);
-  bootLines.forEach((l,i)=>chunks[i%chunks.length].push(l));
-  const start = performance.now();
-  await Promise.all(chunks.map((c,i)=>typeLines(terms[i], c, 90)));
-  // pad to ~60s with ambient logs
-  while(performance.now()-start < 62000){
-    const t = terms[Math.floor(Math.random()*terms.length)];
-    t.textContent += "[ INFO ] heartbeat ok\n"; typeTick();
-    await new Promise(r=>setTimeout(r, 1200));
-  }
-  document.getElementById('boot').style.display='none';
-  document.getElementById('app').style.display='grid';
-})();
-
-/* -------------------- AES-256 runtime loader (payload decrypted in memory) -------------------- */
-/* Minimal AES (WebCrypto). Payload is a string decrypted then executed. */
-async function aesDecrypt(b64, pass){
-  const data = Uint8Array.from(atob(b64), c=>c.charCodeAt(0));
-  const salt = data.slice(0,16), iv = data.slice(16,28), ct = data.slice(28);
-  const keyMaterial = await crypto.subtle.importKey("raw", new TextEncoder().encode(pass), "PBKDF2", false, ["deriveKey"]);
-  const key = await crypto.subtle.deriveKey(
-    {name:"PBKDF2", salt, iterations:100000, hash:"SHA-256"},
-    keyMaterial, {name:"AES-GCM", length:256}, false, ["decrypt"]
-  );
-  const pt = await crypto.subtle.decrypt({name:"AES-GCM", iv}, key, ct);
-  return new TextDecoder().decode(pt);
-}
-// Encrypted payload (example)
-const ENCRYPTED_PAYLOAD = "QkFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB"; // demo placeholder
 (async()=>{
-  try{
-    // To use: replace ENCRYPTED_PAYLOAD with real AES-GCM output and correct pass
-    // const code = await aesDecrypt(ENCRYPTED_PAYLOAD, "strong-passphrase");
-    // new Function(code)();
-  }catch(e){}
+  const terms=layouts.map((_,i)=>term(i));
+  const start=Date.now();
+  let i=0;
+  while(Date.now()-start<90000){
+    const t=terms[i%terms.length];
+    t.textContent+=logs[i%logs.length]+"\n";
+    await new Promise(r=>setTimeout(r,900));
+    i++;
+  }
+  document.getElementById("boot").style.display="none";
+  document.getElementById("app").style.display="grid";
+  initApp();
 })();
 
-/* -------------------- App terminal -------------------- */
-const out=document.getElementById('out');
-const cmd=document.getElementById('cmd');
-const help = `Commands:
-help
-status
-labs
-clear`;
-function print(t){out.textContent+=t+"\n"; out.scrollTop=out.scrollHeight}
-print("Welcome to WhiteHat-CyberLab");
-cmd.addEventListener('keydown',e=>{
-  if(e.key==='Enter'){
-    const v=cmd.value.trim(); cmd.value='';
+/* ---------------- APP ---------------- */
+function print(t){out.textContent+=t+"\n";out.scrollTop=out.scrollHeight}
+
+async function initApp(){
+  print("WhiteHat-CyberLab operational.");
+  const ip=await fetch("https://api.ipify.org?format=json").then(r=>r.json()).catch(()=>({ip:"N/A"}));
+  print("IP Address: "+ip.ip);
+  print("Platform: "+navigator.platform);
+  print("CPU Threads: "+navigator.hardwareConcurrency);
+  print("Resolution: "+screen.width+"x"+screen.height);
+}
+
+/* Commands */
+cmd.onkeydown=e=>{
+  if(e.key==="Enter"){
+    const v=cmd.value;cmd.value="";
     print("$ "+v);
-    if(v==='help') print(help);
-    else if(v==='status') print("All systems nominal.");
-    else if(v==='labs') print("Blue-Team labs available.");
-    else if(v==='clear') out.textContent='';
-    else print("Unknown command");
+    if(v==="help")print("help | status | clear | labs");
+    else if(v==="status")print("All defensive systems nominal.");
+    else if(v==="labs")print("6 Blue-Team labs available.");
+    else if(v==="clear")out.textContent="";
+    else print("Command not recognized.");
   }
-});
+};
+
+/* Ticker */
+const assets=[
+  ["USD","1.00","green"],
+  ["BTC","68420","+1.2%"],
+  ["ETH","3521","+0.8%"],
+  ["SOL","142","+2.4%"]
+];
+document.getElementById("tickerTrack").innerHTML=
+  assets.map(a=>`<span style="margin-right:40px;color:${a[2].includes('+')?'#3bff9a':'#ff6b6b'}">${a[0]} ${a[1]} ${a[2]}</span>`).join("");
 </script>
 </body>
 </html>
