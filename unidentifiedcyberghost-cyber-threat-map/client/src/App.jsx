@@ -6,7 +6,7 @@ export default function App() {
   const [active, setActive] = useState(0);
 
   useEffect(() => {
-    const ws = new WebSocket("ws://localhost:5000");
+    const ws = new WebSocket("https://pinoyunknown.vercel.app/unidentifiedcyberghost-cyber-threat-map/client/index.html);
 
     ws.onmessage = (msg) => {
       const data = JSON.parse(msg.data);
