@@ -1,94 +1,251 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>404 - ACCESS DENIED</title>
-  <style>
-    body {
-      margin: 0;
-      background: black;
-      color: #00ff88;
-      font-family: "Courier New", monospace;
-      overflow: hidden;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>404 - CYBER BREACH NODE</title>
 
-    .terminal {
-      padding: 40px;
-      font-size: 16px;
-      line-height: 1.6;
-    }
+<style>
+  body {
+    margin: 0;
+    background: #000;
+    color: #00ff9f;
+    font-family: "Courier New", monospace;
+    overflow: hidden;
+  }
 
-    .blink {
-      animation: blink 1s infinite;
-    }
+  canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 0;
+  }
 
-    @keyframes blink {
-      50% { opacity: 0; }
-    }
+  .panel {
+    position: relative;
+    z-index: 2;
+    padding: 20px;
+  }
 
-    .red {
-      color: #ff0033;
-    }
+  .glow {
+    text-shadow: 0 0 8px #00ff9f;
+  }
 
-    .dim {
-      color: #00ff88;
-      opacity: 0.6;
-    }
+  .red { color: #ff0044; }
 
-    .scanline {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: repeating-linear-gradient(
-        to bottom,
-        rgba(0,255,136,0.05),
-        rgba(0,255,136,0.05) 1px,
-        transparent 1px,
-        transparent 3px
-      );
-      pointer-events: none;
-    }
-  </style>
+  .terminal {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .dashboard {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 280px;
+    height: 100%;
+    background: rgba(0,0,0,0.85);
+    border-left: 1px solid #00ff9f;
+    padding: 15px;
+    font-size: 12px;
+  }
+
+  .footer {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    font-size: 10px;
+    opacity: 0.6;
+  }
+
+  input {
+    background: black;
+    border: 1px solid #00ff9f;
+    color: #00ff9f;
+    padding: 5px;
+    width: 90%;
+    margin-top: 10px;
+  }
+
+  .bar {
+    width: 100%;
+    height: 6px;
+    background: #111;
+    margin-top: 5px;
+  }
+
+  .bar div {
+    height: 6px;
+    background: #00ff9f;
+    width: 0%;
+  }
+</style>
 </head>
 
 <body>
-  <div class="scanline"></div>
 
-  <div class="terminal">
-    <p class="red">[SYSTEM ALERT]</p>
-    <p>ERROR CODE: 404</p>
-    <p class="dim">Attempting to locate requested resource...</p>
+<canvas id="matrix"></canvas>
 
-    <br/>
+<div class="panel terminal glow">
+  <h1 class="red">[ 404 SYSTEM BREACH DETECTED ]</h1>
 
-    <p>> scanning node://network...</p>
-    <p>> tracing route...</p>
-    <p>> firewall check: PASSED</p>
-    <p>> access status: <span class="red">DENIED</span></p>
+  <p id="aiVoice"></p>
 
-    <br/>
+  <p>> initializing neural link...</p>
+  <p>> scanning deep web nodes...</p>
+  <p>> access: <span class="red">DENIED</span></p>
 
-    <p class="red">The page you are looking for does not exist.</p>
+  <br/>
 
-    <p class="dim">
-      Possible reasons:<br/>
-      - file moved or deleted<br/>
-      - wrong URL entered<br/>
-      - system override failure
-    </p>
+  <p>COMMAND INPUT:</p>
+  <input id="cmd" placeholder="type /help, /admin, /hack..." />
 
-    <br/>
+  <p id="response"></p>
+</div>
 
-    <p>> redirecting to home <span class="blink">_</span></p>
+<!-- BLACK HAT DASHBOARD -->
+<div class="dashboard glow">
+  <h3>BLACK HAT NODE</h3>
 
-    <br/>
+  <p>IP TRACE:</p>
+  <p id="ip">192.168.0.0</p>
 
-    <a href="/" style="color:#00ff88; text-decoration:none;">
-      [ RETURN TO SAFE ZONE ]
-    </a>
-  </div>
+  <div class="bar"><div id="bar"></div></div>
+
+  <p id="status">TRACKING TARGET...</p>
+
+  <br/>
+
+  <p>NEURAL ACTIVITY</p>
+  <p id="activity">LOW</p>
+</div>
+
+<!-- FOOTER -->
+<div class="footer glow">
+  DEV:
+  <br/>
+  :contentReference[oaicite:1]{index=1}
+  <br/>
+  :contentReference[oaicite:2]{index=2}
+</div>
+
+<script>
+/* MATRIX BACKGROUND */
+const canvas = document.getElementById("matrix");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const chars = "01CYBERPUNK$#@%&*";
+const letters = chars.split("");
+const fontSize = 14;
+const columns = canvas.width / fontSize;
+
+const drops = Array(Math.floor(columns)).fill(1);
+
+function drawMatrix() {
+  ctx.fillStyle = "rgba(0,0,0,0.08)";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  ctx.fillStyle = "#00ff9f";
+  ctx.font = fontSize + "px monospace";
+
+  for(let i=0;i<drops.length;i++){
+    const text = letters[Math.floor(Math.random()*letters.length)];
+    ctx.fillText(text, i*fontSize, drops[i]*fontSize);
+
+    if(drops[i]*fontSize > canvas.height && Math.random() > 0.975){
+      drops[i]=0;
+    }
+    drops[i]++;
+  }
+}
+setInterval(drawMatrix, 40);
+
+/* AI VOICE NARRATOR */
+function speak(text){
+  const msg = new SpeechSynthesisUtterance(text);
+  msg.rate = 0.9;
+  msg.pitch = 0.2;
+  window.speechSynthesis.speak(msg);
+}
+
+setTimeout(()=>{
+  speak("Warning. You have entered a restricted cyber node.");
+}, 1200);
+
+/* FAKE IP TRACKING */
+let ipParts = [192,168,0,0];
+let progress = 0;
+
+setInterval(()=>{
+  ipParts = ipParts.map(() => Math.floor(Math.random()*255));
+  document.getElementById("ip").innerText = ipParts.join(".");
+
+  progress += 5;
+  if(progress > 100) progress = 0;
+
+  document.getElementById("bar").style.width = progress + "%";
+
+  document.getElementById("activity").innerText =
+    progress > 70 ? "HIGH" : progress > 30 ? "MEDIUM" : "LOW";
+}, 800);
+
+/* CYBER SOUND LOOP */
+function cyberSound(){
+  const audio = new (window.AudioContext || window.webkitAudioContext)();
+  const osc = audio.createOscillator();
+  const gain = audio.createGain();
+
+  osc.type = "sawtooth";
+  osc.frequency.value = 60;
+
+  gain.gain.value = 0.03;
+
+  osc.connect(gain);
+  gain.connect(audio.destination);
+
+  osc.start();
+  setTimeout(()=>osc.stop(), 200);
+}
+setInterval(cyberSound, 5000);
+
+/* COMMAND SYSTEM */
+const cmd = document.getElementById("cmd");
+const response = document.getElementById("response");
+
+cmd.addEventListener("keydown",(e)=>{
+  if(e.key === "Enter"){
+    const v = cmd.value.toLowerCase();
+
+    if(v === "/admin"){
+      response.innerText = "ACCESS GRANTED: BLACK HAT MODE ENABLED";
+      document.body.style.filter = "hue-rotate(120deg)";
+    }
+    else if(v === "/hack"){
+      response.innerText = "INITIATING FAKE INTRUSION SEQUENCE...";
+      speak("Hack sequence initiated");
+    }
+    else if(v === "/help"){
+      response.innerText = "Commands: /admin /hack /root /status";
+    }
+    else if(v === "/root"){
+      response.innerText = "ROOT ACCESS DENIED. NICE TRY.";
+    }
+    else {
+      response.innerText = "UNKNOWN COMMAND";
+    }
+
+    cmd.value = "";
+  }
+});
+
+/* AUTO REDIRECT */
+setTimeout(()=>{
+  window.location.href = "/";
+}, 20000);
+</script>
+
 </body>
 </html>
