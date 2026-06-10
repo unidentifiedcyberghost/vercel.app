@@ -34,7 +34,7 @@ setTimeout(()=>{boot.style.display='none';login.style.display='block'},2000);
 function go(){
  if(u.value==='admin'&&p.value==='pass'){
   login.style.display='none';dash.style.display='block';
-  const ws=new WebSocket('wss://YOUR_BACKEND_URL');
+  const ws=new WebSocket('wss://subhosting.vercel.app/UCG_STATIC_VERCELOPS/public/index.html');
   let n=0;
   ws.onmessage=e=>{
    const d=JSON.parse(e.data);n++;c.innerText=n;
