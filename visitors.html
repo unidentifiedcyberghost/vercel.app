@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Visitor Logs | WhiteHat-CyberLab</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<style>
+body {
+  background:#000;
+  color:#00ffff;
+  font-family:Courier New, monospace;
+}
+table {
+  width:100%;
+  border-collapse:collapse;
+}
+th, td {
+  border:1px solid #003333;
+  padding:6px;
+  font-size:12px;
+}
+th {
+  background:#001818;
+}
+</style>
+</head>
+<body>
+
+<h2>Visitor Logs</h2>
+
+<table>
+<thead>
+<tr>
+  <th>Time</th>
+  <th>IP</th>
+  <th>Country</th>
+  <th>City</th>
+  <th>ISP</th>
+  <th>Browser</th>
+</tr>
+</thead>
+<tbody id="rows"></tbody>
+</table>
+
+<script>
+fetch("/api/visitors")
+  .then(r => r.json())
+  .then(data => {
+    const rows = document.getElementById("rows");
+    data.reverse().forEach(v => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${v.time}</td>
+        <td>${v.ip}</td>
+        <td>${v.country}</td>
+        <td>${v.city}</td>
+        <td>${v.isp}</td>
+        <td>${v.browser}</td>
+      `;
+      rows.appendChild(tr);
+    });
+  });
+</script>
+
+</body>
+</html>
