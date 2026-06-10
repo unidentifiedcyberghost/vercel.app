@@ -1,200 +1,777 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>WhiteHat-CyberLab</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+<meta charset="UTF-8">
+<title>WhiteHat CyberLab</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-html,body {
+:root{
+  --bg:#000000;
+  --panel:#05090c;
+  --panel2:#071217;
+  --cyan:#00f6ff;
+  --cyan2:#28d8e0;
+  --cyan3:#0a3f46;
+  --text:#b8fbff;
+  --muted:#6aaeb7;
+  --danger:#ff4b6e;
+  --success:#3bff9a;
+  --warn:#ffc94d;
+  --font: Consolas, "Courier New", monospace;
+}
+*{box-sizing:border-box}
+html,body{
   margin:0;
-  padding:0;
-  background:#000;
-  color:#00ffff;
-  font-family: "Courier New", monospace;
+  width:100%;
+  height:100%;
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font);
   overflow:hidden;
 }
 
-/* ===== BOOT ===== */
-#boot {
+/* subtle scanlines + glow */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.03),
+      rgba(255,255,255,0.03) 1px,
+      transparent 2px,
+      transparent 4px
+    ),
+    radial-gradient(circle at 50% 35%, rgba(0,246,255,0.06), transparent 55%);
+  mix-blend-mode:overlay;
+  opacity:.9;
+}
+
+.hidden{display:none!important}
+
+/* ================= BOOT ================= */
+#boot{
   position:fixed;
   inset:0;
   display:grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-  gap:6px;
-  padding:6px;
+  grid-template-columns:repeat(3, 1fr);
+  grid-template-rows:repeat(3, 1fr);
+  gap:10px;
+  padding:10px;
   background:#000;
 }
 
-.tty {
-  border:1px solid #003333;
-  padding:6px;
-  font-size:11px;
+.tty{
+  background:linear-gradient(180deg, #05090c, #020507);
+  border:1px solid rgba(0,246,255,0.22);
+  border-radius:10px;
+  padding:10px 10px 12px;
   overflow:hidden;
-  white-space:pre;
+  box-shadow:0 0 0 1px rgba(0,0,0,.6), 0 0 22px rgba(0,246,255,.06);
+  position:relative;
+}
+.tty h4{
+  margin:0 0 8px;
+  font-size:12px;
+  color:var(--cyan);
+  font-weight:700;
+  letter-spacing:.04em;
+}
+.tty pre{
+  margin:0;
+  white-space:pre-wrap;
+  font-size:11px;
+  line-height:1.35;
+  color:#9ffcff;
+  text-shadow:0 0 7px rgba(0,246,255,.25);
 }
 
-.hidden { display:none; }
+/* boot layout mapping */
+#tty0{grid-column:1;grid-row:1}
+#tty1{grid-column:2;grid-row:1}
+#tty2{grid-column:3;grid-row:1}
+#tty3{grid-column:1;grid-row:2}
+#tty4{grid-column:2;grid-row:2}
+#tty5{grid-column:3;grid-row:2}
+#tty6{grid-column:1 / span 3;grid-row:3}
 
-/* ===== MAIN ===== */
-#main {
+.boot-tag{
+  position:absolute;
+  top:8px;
+  right:10px;
+  font-size:10px;
+  color:var(--muted);
+}
+
+/* ================= APP ================= */
+#app{
   position:fixed;
   inset:0;
+  display:grid;
+  grid-template-rows:46px 1fr 24px 28px;
+  background:#000;
+}
+header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 14px;
+  border-bottom:1px solid rgba(0,246,255,.22);
+  background:#020607;
+  color:var(--cyan);
+  font-size:13px;
+  letter-spacing:.02em;
+}
+header b{color:var(--cyan)}
+header .meta{color:#7fdfe7;font-size:11px}
+
+/* main layout */
+#layout{
+  display:grid;
+  grid-template-columns:240px 1fr 280px;
+  gap:10px;
+  padding:10px;
+  min-height:0;
+}
+
+/* panels */
+.panel{
+  background:linear-gradient(180deg, #051116, #020507);
+  border:1px solid rgba(0,246,255,.18);
+  border-radius:10px;
+  padding:10px;
+  min-height:0;
+  box-shadow:0 0 22px rgba(0,246,255,.05);
+}
+.panel-title{
+  font-size:12px;
+  color:var(--cyan);
+  margin:0 0 8px;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+}
+
+/* left bio */
+#bio{
+  font-size:11px;
+  line-height:1.55;
+  color:#d0fdff;
+}
+#bio .accent{color:var(--cyan)}
+#bio .muted{color:var(--muted)}
+
+/* center map panel */
+#center{
+  position:relative;
+  overflow:hidden;
+}
+#worldWrap{
+  position:absolute;
+  inset:0;
+}
+#worldCanvas{
+  width:100%;
+  height:100%;
+  display:block;
+  background:radial-gradient(circle at 50% 50%, #021017 0%, #000 70%);
+}
+
+/* right SOC */
+#soc{
   display:flex;
   flex-direction:column;
+  min-height:0;
 }
-
-#topbar {
-  padding:8px 12px;
-  border-bottom:1px solid #003333;
-  display:flex;
-  justify-content:space-between;
-}
-
-#map {
-  flex:1;
-}
-
-#footer {
+#nodeInfo{
+  border:1px solid rgba(0,246,255,.18);
+  border-radius:8px;
+  padding:8px;
+  margin-bottom:8px;
+  background:#02080b;
   font-size:11px;
-  padding:6px;
-  border-top:1px solid #003333;
+  color:#d8feff;
+}
+#alerts{
+  flex:1;
+  overflow:auto;
+  font-size:11px;
+  line-height:1.45;
+  border-top:1px solid rgba(0,246,255,.12);
+  padding-top:8px;
+}
+.alert{
+  margin-bottom:6px;
+  padding-bottom:6px;
+  border-bottom:1px dashed rgba(0,246,255,.12);
+}
+.alert .t{color:var(--cyan)}
+.alert .r{color:var(--danger)}
+.alert .g{color:var(--success)}
+.alert .w{color:var(--warn)}
+
+/* bottom bar */
+#statusbar{
+  border-top:1px solid rgba(0,246,255,.18);
+  padding:4px 10px;
+  font-size:11px;
+  color:#8de9f0;
   display:flex;
   justify-content:space-between;
-  color:#88ffff;
+  align-items:center;
+  gap:10px;
+  background:#020607;
+}
+
+/* marquee ticker */
+#ticker{
+  overflow:hidden;
+  white-space:nowrap;
+  border-top:1px solid rgba(0,246,255,.14);
+  background:#010305;
+  font-size:11px;
+  color:#8de9f0;
+}
+#ticker span{
+  display:inline-block;
+  padding-left:100%;
+  animation:scroll 26s linear infinite;
+}
+@keyframes scroll{
+  from{transform:translateX(0)}
+  to{transform:translateX(-100%)}
+}
+
+/* small hover glow */
+.labdot{
+  width:9px;height:9px;border-radius:50%;
+  display:inline-block;margin-right:6px;
+  box-shadow:0 0 10px currentColor;
+}
+kbd{
+  border:1px solid rgba(0,246,255,.22);
+  border-bottom-width:2px;
+  padding:1px 5px;
+  border-radius:4px;
+  color:#d8feff;
+  background:#071217;
+  font-size:10px;
 }
 </style>
 </head>
-
 <body>
 
-<!-- ===== BOOT SCREEN ===== -->
-<div id="boot">
-  <div class="tty" id="tty0"></div>
-  <div class="tty" id="tty1"></div>
-  <div class="tty" id="tty2"></div>
-  <div class="tty" id="tty3"></div>
-  <div class="tty" id="tty4"></div>
-  <div class="tty" id="tty5"></div>
-</div>
+<!-- BOOT -->
+<div id="boot"></div>
 
-<!-- ===== MAIN UI ===== -->
-<div id="main" class="hidden">
-  <div id="topbar">
-    <div>WhiteHat-CyberLab</div>
-    <div>ALIAS: <strong>unidentifiedcyberghost</strong></div>
+<!-- APP -->
+<div id="app" class="hidden">
+  <header>
+    <div><b>WhiteHat-CyberLab</b></div>
+    <div class="meta">Operator: Team White Hat · Alias: <b>unidentifiedcyberghost</b></div>
+  </header>
+
+  <div id="layout">
+    <!-- BIO -->
+    <aside class="panel" id="bioPanel">
+      <div class="panel-title">Operator Bio</div>
+      <div id="bio">
+        <span class="accent">Alias:</span> unidentifiedcyberghost<br>
+        <span class="accent">Group:</span> Team White Hat<br>
+        <span class="accent">Role:</span> Blue-Team Engineer<br>
+        <span class="accent">Focus:</span> SOC · Threat Intel · Defense<br>
+        <span class="accent">Status:</span> <span class="g">ONLINE</span><br><br>
+
+        <span class="muted">Tip:</span> Click a node on the map to inspect it.
+      </div>
+    </aside>
+
+    <!-- CENTER MAP -->
+    <section class="panel" id="center">
+      <div class="panel-title">Holographic World Map</div>
+      <div id="worldWrap">
+        <canvas id="worldCanvas"></canvas>
+      </div>
+    </section>
+
+    <!-- SOC -->
+    <aside class="panel" id="soc">
+      <div class="panel-title">SOC Alerts</div>
+      <div id="nodeInfo">
+        <div><b>Node Inspector</b></div>
+        <div>Click a highlighted country node.</div>
+      </div>
+      <div id="alerts"></div>
+    </aside>
   </div>
-  <div id="map"></div>
-  <div id="footer">
-    <div>
-      github: https://github.com/unidentifiedcyberghost |
-      instagram: https://www.instagram.com/pinoyunknown
-    </div>
-    <div id="geoInfo"></div>
+
+  <div id="statusbar">
+    <div>github: unidentifiedcyberghost · instagram: pinoyunknown</div>
+    <div>Use <kbd>click</kbd> to inspect · <kbd>ESC</kbd> to skip boot</div>
+  </div>
+
+  <div id="ticker">
+    <span>
+      USD 1.00 · BTC 68420 ▲1.2% · ETH 3521 ▲0.8% · SOL 142 ▲2.4% · XMR 165 ▲0.6% · Cyber Defense Active · WhiteHat Monitoring Online ·
+    </span>
   </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/three@0.158/build/three.min.js"></script>
 
 <script>
-/* ===== BOOT DATA ===== */
+/* =========================================================
+   FAST MULTI-TTY BOOT
+========================================================= */
+const boot = document.getElementById("boot");
+const bootNames = ["unidentifiedcyberghost", "PinoyUnknown", "Anonymous", "Team White Hat"];
 const bootLines = [
-  "[ OK ] Initializing kernel modules",
-  "[ OK ] Loading netfilter, tcp/ip stack",
-  "[ OK ] Mounting secure volumes",
-  "[INFO] SOC environment bootstrap",
-  "[INFO] Threat feed prefetch",
-  "[INFO] Analyst alias: unidentifiedcyberghost",
-  "[INFO] Team White Hat",
-  "[INFO] Anonymous collective node detected",
-  "[INFO] PinoyUnknown identity loaded",
-  "[INFO] Web crawling modules",
-  "[INFO] Network topology mapping",
-  "[INFO] SQL injection pattern database",
-  "[INFO] NMAP fingerprint tables",
-  "[INFO] Defensive heuristics loaded",
-  "[INFO] Cyber defense grid online"
+  "Kernel boot sequence initiated",
+  "Entropy pool seeded",
+  "Routing table built",
+  "DNS resolver loaded",
+  "Memory mapping complete",
+  "Traffic inspection modules ready",
+  "Blue-team defensive stack loaded",
+  "Policy engine armed",
+  "CPU features detected",
+  "Audit daemon started",
+  "Network interfaces online",
+  "SOC telemetry active",
+  "Host fingerprint verified",
+  "TLS policy hardened",
+  "Packet capture filters armed",
+  "Geo resolver queued",
+  "Threat feed sync started",
+  "Log ingest pipeline online",
+  "Defense dashboard prepared"
 ];
 
-const ttys = [...Array(6)].map((_,i)=>document.getElementById("tty"+i));
-
-function startBoot() {
-  let counters = Array(6).fill(0);
-  const interval = setInterval(() => {
-    ttys.forEach((tty, i) => {
-      tty.textContent += bootLines[Math.floor(Math.random()*bootLines.length)] + "\n";
-      tty.scrollTop = tty.scrollHeight;
-      counters[i]++;
-    });
-    if (counters[0] > 80) {
-      clearInterval(interval);
-      document.getElementById("boot").classList.add("hidden");
-      document.getElementById("main").classList.remove("hidden");
-      initMap();
-    }
-  }, 40);
+const ttyEls = [];
+for (let i = 0; i <= 6; i++) {
+  const box = document.createElement("div");
+  box.className = "tty";
+  box.innerHTML = `<h4>tty${i}</h4><pre id="tty${i}p"></pre><div class="boot-tag">LIVE</div>`;
+  boot.appendChild(box);
+  ttyEls.push(document.getElementById(`tty${i}p`));
 }
 
-/* ===== MAP ===== */
-async function initMap() {
-  const scene = new THREE.Scene();
-  const camera = new THREE.OrthographicCamera(
-    -window.innerWidth/2,
-     window.innerWidth/2,
-     window.innerHeight/2,
-    -window.innerHeight/2,
-     1, 1000
-  );
-  camera.position.z = 10;
-
-  const renderer = new THREE.WebGLRenderer({ antialias:true });
-  renderer.setSize(window.innerWidth, window.innerHeight-60);
-  document.getElementById("map").appendChild(renderer.domElement);
-
-  const texture = new THREE.TextureLoader().load(
-    "https://raw.githubusercontent.com/alenpepaxx1/Global-Cyber-Threat-Map/main/assets/world.png"
-  );
-
-  const plane = new THREE.Mesh(
-    new THREE.PlaneGeometry(1600,800),
-    new THREE.MeshBasicMaterial({ map:texture })
-  );
-  scene.add(plane);
-
-  // GEO
-  const geo = await fetch("/api/geo").then(r=>r.json());
-  document.getElementById("geoInfo").textContent =
-    `${geo.ip} | ${geo.country} | ${geo.org}`;
-
-  const dot = new THREE.Mesh(
-    new THREE.CircleGeometry(6,16),
-    new THREE.MeshBasicMaterial({ color:0x00ffff })
-  );
-  dot.position.set(geo.lon*4, geo.lat*4, 2);
-  scene.add(dot);
-
-  // FEEDS
-  const feed = await fetch("/api/feeds").then(r=>r.json());
-  feed.events.forEach(e=>{
-    const mat = new THREE.LineBasicMaterial({ color:0xff0040 });
-    const pts = [
-      new THREE.Vector3(e.src.lon*4, e.src.lat*4, 3),
-      new THREE.Vector3(e.dst.lon*4, e.dst.lat*4, 3)
-    ];
-    const g = new THREE.BufferGeometry().setFromPoints(pts);
-    scene.add(new THREE.Line(g, mat));
+let bootTick = 0;
+const bootInterval = setInterval(() => {
+  ttyEls.forEach((el, idx) => {
+    const linesPerTick = 2 + (Math.random() * 3 | 0);
+    for (let j = 0; j < linesPerTick; j++) {
+      const pick = Math.random() > 0.45
+        ? bootLines[Math.random() * bootLines.length | 0]
+        : `Identity stream: ${bootNames[Math.random() * bootNames.length | 0]}`;
+      el.textContent += `[${new Date().toLocaleTimeString()}] ${pick}\n`;
+    }
+    // keep scroll tight and non-overlapping
+    const arr = el.textContent.split("\n");
+    if (arr.length > 42) el.textContent = arr.slice(arr.length - 42).join("\n");
+    el.parentElement.scrollTop = el.parentElement.scrollHeight;
   });
 
-  function animate() {
-    requestAnimationFrame(animate);
-    renderer.render(scene, camera);
+  bootTick++;
+  if (bootTick > 100) {
+    clearInterval(bootInterval);
+    fadeToApp();
   }
-  animate();
+}, 55);
+
+window.addEventListener("keydown", e => {
+  if (e.key === "Escape") fadeToApp();
+});
+
+function fadeToApp() {
+  if (boot.classList.contains("hidden")) return;
+  boot.style.transition = "opacity .9s ease";
+  boot.style.opacity = "0";
+  setTimeout(() => {
+    boot.classList.add("hidden");
+    document.getElementById("app").classList.remove("hidden");
+    document.getElementById("app").style.display = "grid";
+    initWorld();
+    startSocFeed();
+  }, 900);
 }
 
-startBoot();
-</script>
+/* =========================================================
+   WORLD MAP (BLACK BG, NORSE-STYLE, FLAT WORLD)
+========================================================= */
+const worldCanvas = document.getElementById("worldCanvas");
+const ctx = worldCanvas.getContext("2d");
+let cw = 0, ch = 0;
 
+function resizeCanvas() {
+  const parent = worldCanvas.parentElement;
+  cw = worldCanvas.width = parent.clientWidth * devicePixelRatio;
+  ch = worldCanvas.height = parent.clientHeight * devicePixelRatio;
+  worldCanvas.style.width = parent.clientWidth + "px";
+  worldCanvas.style.height = parent.clientHeight + "px";
+}
+window.addEventListener("resize", resizeCanvas);
+
+const nodes = [
+  { name: "United States", lat: 38, lon: -97, type: "defense", color: "#00f6ff" },
+  { name: "Canada", lat: 56, lon: -106, type: "monitor", color: "#6ee7ff" },
+  { name: "Brazil", lat: -10, lon: -55, type: "alert", color: "#ff4b6e" },
+  { name: "United Kingdom", lat: 54, lon: -2, type: "defense", color: "#00f6ff" },
+  { name: "Germany", lat: 51, lon: 10, type: "analysis", color: "#3bff9a" },
+  { name: "UAE", lat: 24, lon: 54, type: "monitor", color: "#6ee7ff" },
+  { name: "India", lat: 21, lon: 78, type: "alert", color: "#ff4b6e" },
+  { name: "Japan", lat: 36, lon: 138, type: "analysis", color: "#3bff9a" },
+  { name: "Singapore", lat: 1.3, lon: 103.8, type: "monitor", color: "#6ee7ff" },
+  { name: "Australia", lat: -25, lon: 134, type: "defense", color: "#00f6ff" },
+  { name: "South Africa", lat: -30, lon: 25, type: "monitor", color: "#6ee7ff" }
+];
+
+let selectedNode = null;
+let ipDot = null;
+let arcs = [];
+let pulses = [];
+let arcParticles = [];
+
+function latLonToXY(lat, lon) {
+  const padX = cw * 0.06;
+  const padY = ch * 0.10;
+  const x = padX + ((lon + 180) / 360) * (cw - padX * 2);
+  const y = padY + ((90 - lat) / 180) * (ch - padY * 2);
+  return { x, y };
+}
+
+function drawGrid() {
+  ctx.save();
+  ctx.strokeStyle = "rgba(0,246,255,0.06)";
+  ctx.lineWidth = 1;
+
+  for (let i = 1; i < 10; i++) {
+    const y = (ch / 10) * i;
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(cw, y); ctx.stroke();
+  }
+  for (let i = 1; i < 16; i++) {
+    const x = (cw / 16) * i;
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, ch); ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawContours() {
+  // Stylized flat world outline (original, not copyrighted)
+  const continents = [
+    // North America
+    [[0.08,0.22],[0.14,0.12],[0.25,0.10],[0.31,0.16],[0.30,0.26],[0.25,0.35],[0.18,0.40],[0.10,0.36],[0.07,0.29]],
+    // South America
+    [[0.28,0.50],[0.34,0.53],[0.36,0.66],[0.34,0.82],[0.29,0.92],[0.24,0.82],[0.23,0.66]],
+    // Europe
+    [[0.43,0.19],[0.50,0.16],[0.56,0.19],[0.57,0.25],[0.50,0.28],[0.44,0.25]],
+    // Africa
+    [[0.46,0.30],[0.55,0.32],[0.59,0.45],[0.58,0.64],[0.53,0.80],[0.46,0.67],[0.43,0.50]],
+    // Asia
+    [[0.57,0.18],[0.72,0.14],[0.84,0.16],[0.92,0.24],[0.92,0.34],[0.86,0.43],[0.76,0.42],[0.67,0.34],[0.60,0.27]],
+    // Australia
+    [[0.79,0.74],[0.88,0.74],[0.93,0.82],[0.88,0.89],[0.80,0.86],[0.76,0.80]]
+  ];
+
+  ctx.save();
+  ctx.strokeStyle = "rgba(0,246,255,0.85)";
+  ctx.fillStyle = "rgba(0,246,255,0.03)";
+  ctx.lineWidth = 2 * devicePixelRatio;
+  ctx.shadowColor = "rgba(0,246,255,0.65)";
+  ctx.shadowBlur = 14;
+
+  continents.forEach(poly => {
+    ctx.beginPath();
+    poly.forEach((p, idx) => {
+      const x = p[0] * cw;
+      const y = p[1] * ch;
+      if (idx === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+  });
+
+  ctx.restore();
+}
+
+function drawNode(x, y, color, label, selected=false) {
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(x, y, selected ? 10 : 7, 0, Math.PI * 2);
+  ctx.fillStyle = color;
+  ctx.shadowColor = color;
+  ctx.shadowBlur = selected ? 24 : 14;
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.arc(x, y, selected ? 18 : 12, 0, Math.PI * 2);
+  ctx.strokeStyle = color;
+  ctx.globalAlpha = 0.35;
+  ctx.lineWidth = 2 * devicePixelRatio;
+  ctx.stroke();
+
+  ctx.restore();
+
+  // label
+  ctx.save();
+  ctx.font = `${11 * devicePixelRatio}px Consolas, monospace`;
+  ctx.fillStyle = "rgba(210,250,255,0.85)";
+  ctx.fillText(label, x + 10, y - 10);
+  ctx.restore();
+}
+
+function drawArc(a, b, color, progress=1, alpha=0.6) {
+  const start = latLonToXY(a.lat, a.lon);
+  const end = latLonToXY(b.lat, b.lon);
+
+  const midX = (start.x + end.x) / 2;
+  const midY = Math.min(start.y, end.y) - Math.abs(end.x - start.x) * 0.18 - 70 * devicePixelRatio;
+  const cp = { x: midX, y: midY };
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(start.x, start.y);
+
+  const t = Math.max(0.01, progress);
+  const steps = 40;
+  for (let i = 1; i <= steps * t; i++) {
+    const p = i / steps;
+    const x = (1 - p) * (1 - p) * start.x + 2 * (1 - p) * p * cp.x + p * p * end.x;
+    const y = (1 - p) * (1 - p) * start.y + 2 * (1 - p) * p * cp.y + p * p * end.y;
+    ctx.lineTo(x, y);
+  }
+  ctx.strokeStyle = color;
+  ctx.globalAlpha = alpha;
+  ctx.lineWidth = 2 * devicePixelRatio;
+  ctx.shadowColor = color;
+  ctx.shadowBlur = 18;
+  ctx.stroke();
+  ctx.restore();
+
+  // particle pulse along arc
+  const p = Math.max(0, Math.min(1, progress));
+  const x = (1 - p) * (1 - p) * start.x + 2 * (1 - p) * p * cp.x + p * p * end.x;
+  const y = (1 - p) * (1 - p) * start.y + 2 * (1 - p) * p * cp.y + p * p * end.y;
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(x, y, 3.5 * devicePixelRatio, 0, Math.PI * 2);
+  ctx.fillStyle = color;
+  ctx.shadowColor = color;
+  ctx.shadowBlur = 14;
+  ctx.fill();
+  ctx.restore();
+}
+
+function spawnPulse(node, color) {
+  pulses.push({
+    node,
+    color,
+    r: 0,
+    alpha: 0.55
+  });
+}
+
+function drawPulse(p) {
+  const xy = latLonToXY(p.node.lat, p.node.lon);
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(xy.x, xy.y, p.r, 0, Math.PI * 2);
+  ctx.strokeStyle = p.color;
+  ctx.globalAlpha = p.alpha;
+  ctx.lineWidth = 2 * devicePixelRatio;
+  ctx.shadowColor = p.color;
+  ctx.shadowBlur = 24;
+  ctx.stroke();
+  ctx.restore();
+}
+
+function updatePulse(p) {
+  p.r += 2.2 * devicePixelRatio;
+  p.alpha *= 0.975;
+}
+
+function initWorld() {
+  resizeCanvas();
+
+  // live IP geo dot
+  fetch("https://ipapi.co/json/")
+    .then(r => r.json())
+    .then(d => {
+      if (!d || d.latitude == null || d.longitude == null) return;
+      ipDot = { lat: d.latitude, lon: d.longitude, name: d.city ? `${d.city}, ${d.country_name}` : "Your Geo" };
+      nodeInfoSet(`Live Geo: ${ipDot.name}<br>IP: ${d.ip || "hidden"}<br>Mode: Monitored`);
+    })
+    .catch(() => {
+      ipDot = { lat: 13.0, lon: 122.0, name: "Philippines" };
+    });
+
+  // example arcs (Norse-like command center visual)
+  arcs = [
+    { a: nodesByName("United States"), b: nodesByName("Germany"), color: "#00f6ff", progress: 0, speed: 0.010 },
+    { a: nodesByName("Japan"), b: nodesByName("Singapore"), color: "#ff4b6e", progress: 0, speed: 0.014 },
+    { a: nodesByName("United Kingdom"), b: nodesByName("UAE"), color: "#3bff9a", progress: 0, speed: 0.009 },
+    { a: nodesByName("Brazil"), b: nodesByName("United States"), color: "#00f6ff", progress: 0, speed: 0.008 }
+  ];
+
+  // initial pulses
+  spawnPulse(nodesByName("United States"), "#00f6ff");
+  spawnPulse(nodesByName("Germany"), "#3bff9a");
+  spawnPulse(nodesByName("Japan"), "#ff4b6e");
+  spawnPulse(nodesByName("United Kingdom"), "#00f6ff");
+
+  // click-to-inspect
+  worldCanvas.addEventListener("click", onMapClick);
+
+  // start animation
+  requestAnimationFrame(render);
+}
+
+function nodesByName(name){ return nodes.find(n => n.name === name); }
+
+function resizeCanvas() {
+  const parent = worldCanvas.parentElement;
+  worldCanvas.width = parent.clientWidth * devicePixelRatio;
+  worldCanvas.height = parent.clientHeight * devicePixelRatio;
+  worldCanvas.style.width = parent.clientWidth + "px";
+  worldCanvas.style.height = parent.clientHeight + "px";
+}
+
+function render() {
+  ctx.clearRect(0, 0, cw, ch);
+
+  // black background + subtle grid
+  drawGrid();
+  drawContours();
+
+  // all nodes
+  nodes.forEach(n => {
+    const xy = latLonToXY(n.lat, n.lon);
+    drawNode(xy.x, xy.y, n.color, n.name, selectedNode && selectedNode.name === n.name);
+  });
+
+  // live IP node
+  if (ipDot) {
+    const xy = latLonToXY(ipDot.lat, ipDot.lon);
+    drawNode(xy.x, xy.y, "#ff4b6e", "Live IP", false);
+  }
+
+  // arcs
+  arcs.forEach(a => {
+    a.progress += a.speed;
+    if (a.progress > 1) {
+      a.progress = 0;
+      // spawn pulse on completion
+      if (Math.random() > 0.5) spawnPulse(a.a, a.color);
+      else spawnPulse(a.b, a.color);
+    }
+    drawArc(a.a, a.b, a.color, a.progress, 0.68);
+  });
+
+  // pulses
+  for (let i = pulses.length - 1; i >= 0; i--) {
+    const p = pulses[i];
+    drawPulse(p);
+    updatePulse(p);
+    if (p.alpha < 0.05) pulses.splice(i, 1);
+  }
+
+  // occasional sweeping rings on a random node
+  if (Math.random() < 0.01) {
+    spawnPulse(nodes[Math.random() * nodes.length | 0], "#00f6ff");
+  }
+
+  requestAnimationFrame(render);
+}
+
+function onMapClick(e) {
+  const rect = worldCanvas.getBoundingClientRect();
+  const x = (e.clientX - rect.left) * devicePixelRatio;
+  const y = (e.clientY - rect.top) * devicePixelRatio;
+
+  let closest = null;
+  let dist = Infinity;
+
+  nodes.forEach(n => {
+    const xy = latLonToXY(n.lat, n.lon);
+    const d = Math.hypot(x - xy.x, y - xy.y);
+    if (d < dist) { dist = d; closest = n; }
+  });
+
+  const ipxy = ipDot ? latLonToXY(ipDot.lat, ipDot.lon) : null;
+  if (ipxy) {
+    const d = Math.hypot(x - ipxy.x, y - ipxy.y);
+    if (d < dist) {
+      dist = d;
+      closest = { name: ipDot.name, lat: ipDot.lat, lon: ipDot.lon, color: "#ff4b6e", type: "live ip" };
+    }
+  }
+
+  if (closest && dist < 22 * devicePixelRatio) {
+    selectedNode = closest;
+    nodeInfoSet(
+      `<b>${closest.name}</b><br><br>` +
+      `Lat: ${closest.lat.toFixed(2)}<br>` +
+      `Lon: ${closest.lon.toFixed(2)}<br>` +
+      `Type: ${closest.type || "country node"}<br>` +
+      `Mode: Blue-Team monitored`
+    );
+    logAlert(`[NODE] ${closest.name} inspected`);
+  }
+}
+
+function nodeInfoSet(html) {
+  const box = document.getElementById("nodeInfo");
+  box.innerHTML = `<div><b>Node Inspector</b></div><div style="margin-top:6px">${html}</div>`;
+}
+
+window.addEventListener("resize", () => {
+  if (!worldCanvas.parentElement) return;
+  resizeCanvas();
+});
+
+/* =========================================================
+   SOC ALERT FEED
+========================================================= */
+const alerts = document.getElementById("alerts");
+function logAlert(text, level="t") {
+  const time = new Date().toLocaleTimeString();
+  const color = level === "r" ? "r" : level === "g" ? "g" : level === "w" ? "w" : "t";
+  const div = document.createElement("div");
+  div.className = "alert";
+  div.innerHTML = `<span class="${color}">[${time}]</span> ${text}`;
+  alerts.prepend(div);
+}
+
+function startSocFeed() {
+  const feed = [
+    ["Traffic anomaly detected on transatlantic route", "w"],
+    ["Node health stable in North America", "g"],
+    ["Suspicious burst observed on APAC corridor", "r"],
+    ["Defense rule applied to European ingress", "g"],
+    ["Telemetry synchronized across monitored regions", "t"],
+    ["Threat feed correlation completed", "w"]
+  ];
+
+  setInterval(() => {
+    const item = feed[Math.random() * feed.length | 0];
+    logAlert(item[0], item[1]);
+
+    // also trigger a pulse occasionally
+    const n = nodes[Math.random() * nodes.length | 0];
+    spawnPulse(n, item[1] === "r" ? "#ff4b6e" : "#00f6ff");
+  }, 2200);
+}
+
+/* =========================================================
+   ESC TO SKIP BOOT
+========================================================= */
+window.addEventListener("keydown", e => {
+  if (e.key === "Escape" && !document.getElementById("app").classList.contains("hidden")) {
+    selectedNode = null;
+    nodeInfoSet("Click a highlighted country node.");
+  }
+});
+</script>
 </body>
 </html>
