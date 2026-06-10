@@ -1,283 +1,219 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>WhiteHat-CyberLab</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<title>WhiteHat CyberLab</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- ===== STYLE ===== -->
 <style>
-html, body {
-  margin: 0;
-  padding: 0;
-  background: #000;
-  color: #00ffff;
-  font-family: Consolas, "Courier New", monospace;
-  height: 100%;
-  overflow: hidden;
+html,body{
+  margin:0;
+  padding:0;
+  background:#02060a;
+  color:#00ffe1;
+  font-family: Consolas, monospace;
+  overflow:hidden;
+}
+.hidden{display:none}
+#boot{position:fixed;inset:0;display:grid;grid-template-columns:repeat(7,1fr);gap:6px;padding:6px;background:#000}
+.tty{
+  border:1px solid #00ffe144;
+  padding:6px;
+  font-size:11px;
+  line-height:1.2;
+  overflow:hidden;
+}
+.tty pre{margin:0;white-space:pre-wrap}
+
+#ui{position:fixed;inset:0;display:grid;grid-template-columns:260px 1fr;grid-template-rows:40px 1fr 28px}
+header{
+  grid-column:1/3;
+  display:flex;
+  justify-content:space-between;
+  padding:6px 12px;
+  border-bottom:1px solid #00ffe144;
+}
+#sidebar{
+  border-right:1px solid #00ffe144;
+  padding:10px;
+}
+#bio{
+  border:1px solid #00ffe144;
+  padding:6px;
+  margin-bottom:10px;
+  font-size:12px;
+}
+#map{
+  position:relative;
+}
+footer{
+  grid-column:1/3;
+  display:flex;
+  justify-content:space-between;
+  padding:4px 10px;
+  font-size:11px;
+  border-top:1px solid #00ffe144;
 }
 
-/* ================= BOOT GRID ================= */
-#bootGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-  gap: 6px;
-  padding: 6px;
-  height: 100vh;
-}
-
-.tty {
-  border: 1px solid #0ff;
-  padding: 6px;
-  font-size: 11px;
-  white-space: pre-wrap;
-  overflow: hidden;
-  background: rgba(0,255,255,0.02);
-}
-
-/* ================= MAIN APP ================= */
-#app {
-  display: none;
-  height: 100vh;
-  grid-template-columns: 260px 1fr 360px;
-  grid-template-rows: auto 1fr auto;
-  gap: 6px;
-  padding: 6px;
-}
-
-header, aside, main, #map, footer {
-  border: 1px solid #0ff;
-  padding: 6px;
-}
-
-header {
-  grid-column: 1 / -1;
-  display: flex;
-  justify-content: space-between;
-}
-
-footer {
-  grid-column: 1 / -1;
-  font-size: 11px;
-}
-
-#terminal {
-  height: 100%;
-  overflow-y: auto;
-  font-size: 12px;
-}
-
-/* ================= MARQUEE ================= */
-.marquee {
-  overflow: hidden;
-  white-space: nowrap;
-  margin-top: 4px;
-}
-.marquee span {
-  display: inline-block;
-  padding-left: 100%;
-  animation: scroll 28s linear infinite;
-}
-@keyframes scroll {
-  to { transform: translateX(-100%); }
-}
-
-/* ================= MAP ================= */
-#holoMap {
-  width: 100%;
-  height: 100%;
-}
-
-/* ================= CRT EFFECT ================= */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
+/* CRT */
+#crt{
+  pointer-events:none;
+  position:fixed;
+  inset:0;
   background:
     repeating-linear-gradient(
       to bottom,
-      rgba(255,255,255,0.03),
-      rgba(255,255,255,0.03) 1px,
-      transparent 2px,
-      transparent 3px
+      rgba(0,255,225,0.05),
+      rgba(0,255,225,0.05) 1px,
+      transparent 1px,
+      transparent 2px
     );
-  mix-blend-mode: overlay;
+  mix-blend-mode:overlay;
+  animation:flicker 0.12s infinite;
+}
+@keyframes flicker{
+  0%{opacity:.15}
+  50%{opacity:.22}
+  100%{opacity:.15}
 }
 </style>
 </head>
 
 <body>
 
-<!-- ================= BOOT SEQUENCE ================= -->
-<div id="bootGrid">
-  <div class="tty" id="tty0"></div>
-  <div class="tty" id="tty1"></div>
-  <div class="tty" id="tty2"></div>
-  <div class="tty" id="tty3"></div>
-  <div class="tty" id="tty4"></div>
-  <div class="tty" id="tty5"></div>
-</div>
+<!-- ===== BOOT GRID ===== -->
+<div id="boot"></div>
 
-<!-- ================= MAIN APP ================= -->
-<div id="app">
+<!-- ===== MAIN UI ===== -->
+<div id="ui" class="hidden">
   <header>
-    <strong>WhiteHat-CyberLab</strong>
-    <span>Operator: Team WhiteHat | Alias: PinoyUnknown</span>
+    <div>WhiteHat-CyberLab</div>
+    <div>Operator: Team WhiteHat · Alias: <b>unidentifiedcyberghost</b></div>
   </header>
 
-  <aside>
-    <strong>Profile</strong><br><br>
-    Codename: PinoyUnknown<br>
-    Role: Blue-Team Analyst<br>
-    Focus: Cyber Defense<br>
-    Status: Active<br><br>
-
-    <strong>Labs</strong><br>
-    Network Defense<br>
-    Web Hardening<br>
-    SOC Analysis<br>
-    Threat Intelligence<br>
-    Endpoint Security<br>
-    Cloud Security
-  </aside>
-
-  <main>
-    <div id="terminal"></div>
-  </main>
-
-  <div id="map">
-    <div id="holoMap"></div>
+  <div id="sidebar">
+    <div id="bio">
+      <b>PROFILE</b><br>
+      Alias: unidentifiedcyberghost<br>
+      Groups: Team White Hat / Anonymous<br>
+      Role: Blue-Team Analyst<br>
+      Focus: Defense · Forensics · Threat Intel
+    </div>
+    Blue-Team Labs
+    <ul>
+      <li>Network Defense</li>
+      <li>SOC Analysis</li>
+      <li>Threat Intelligence</li>
+      <li>Cloud Security</li>
+    </ul>
   </div>
 
+  <div id="map"></div>
+
   <footer>
-    <div>
-      github: https://github.com/unidentifiedcyberghost<br>
-      instagram: https://www.instagram.com/pinoyunknown
-    </div>
-    <div class="marquee">
-      <span>
-        USD 1.00 | BTC +1.42% | ETH +0.83% | SOL +2.10% | XAU +0.25% | Cyber Defense Monitoring Active
-      </span>
-    </div>
+    <div>github: unidentifiedcyberghost · instagram: pinoyunknown</div>
+    <div>USD 1.00 | BTC +1.2% | ETH +0.8% | SOL +2.4%</div>
   </footer>
 </div>
 
-<!-- ================= THREE.JS ================= -->
-<script src="https://unpkg.com/three@0.158.0/build/three.min.js"></script>
-<script src="https://unpkg.com/three@0.158.0/examples/js/postprocessing/EffectComposer.js"></script>
-<script src="https://unpkg.com/three@0.158.0/examples/js/postprocessing/RenderPass.js"></script>
-<script src="https://unpkg.com/three@0.158.0/examples/js/postprocessing/ShaderPass.js"></script>
+<div id="crt"></div>
+
+<!-- ===== THREE.JS ===== -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.159.0/build/three.min.js"></script>
 
 <script>
-/* ================= BOOT SEQUENCE ================= */
-const bootLines = [
+/* ===========================
+   BOOT SEQUENCE
+=========================== */
+const names=["unidentifiedcyberghost","PinoyUnknown","Anonymous","Team White Hat"];
+const sysLines=[
   "Initializing kernel modules",
-  "Loading tty interfaces",
-  "Mapping system memory",
-  "Enumerating network interfaces",
-  "Passive network discovery",
-  "DNS resolution matrix",
-  "Web crawler initialized",
-  "Endpoint telemetry active",
-  "Threat intelligence feeds loaded",
-  "SOC sensors online",
-  "WhiteHat operational environment ready"
+  "Detecting hardware topology",
+  "Mapping network interfaces",
+  "Loading threat signatures",
+  "Injecting telemetry streams",
+  "Starting SOC engines",
+  "Establishing secure tunnel",
+  "Enumerating IP ranges",
+  "Deploying IDS sensors",
+  "Synchronizing time servers"
 ];
 
-const ttys = [...Array(6)].map((_,i)=>document.getElementById("tty"+i));
-let step = 0;
+const boot=document.getElementById("boot");
+const ttys=[];
 
-const bootTimer = setInterval(() => {
-  ttys.forEach((tty, i) => {
-    tty.textContent += `[tty${i}] ${bootLines[(step+i)%bootLines.length]}\n`;
-  });
-  step++;
-  if (step > 30) {
-    clearInterval(bootTimer);
-    document.getElementById("bootGrid").style.display = "none";
-    document.getElementById("app").style.display = "grid";
-    initMap();
-    log("WhiteHat-CyberLab operational.");
-  }
-}, 450);
-
-/* ================= TERMINAL ================= */
-const term = document.getElementById("terminal");
-function log(msg){
-  term.innerHTML += msg + "<br>";
-  term.scrollTop = term.scrollHeight;
+for(let i=0;i<7;i++){
+  const d=document.createElement("div");
+  d.className="tty";
+  const p=document.createElement("pre");
+  d.appendChild(p);
+  boot.appendChild(d);
+  ttys.push(p);
 }
 
-/* ================= THREE.JS GLOBE ================= */
-function initMap(){
-  const container = document.getElementById("holoMap");
-
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(45, container.clientWidth/container.clientHeight, 0.1, 1000);
-  camera.position.z = 3;
-
-  const renderer = new THREE.WebGLRenderer({ alpha:true, antialias:true });
-  renderer.setSize(container.clientWidth, container.clientHeight);
-  renderer.setPixelRatio(window.devicePixelRatio);
-  container.appendChild(renderer.domElement);
-
-  const earth = new THREE.Mesh(
-    new THREE.SphereGeometry(1,64,64),
-    new THREE.MeshBasicMaterial({ color:0x00ffff, wireframe:true, opacity:0.5, transparent:true })
-  );
-  scene.add(earth);
-
-  const glow = new THREE.Mesh(
-    new THREE.SphereGeometry(1.05,64,64),
-    new THREE.MeshBasicMaterial({ color:0x00ffff, opacity:0.08, transparent:true })
-  );
-  scene.add(glow);
-
-  function latLng(lat, lon, r=1.01){
-    const phi=(90-lat)*Math.PI/180;
-    const theta=(lon+180)*Math.PI/180;
-    return new THREE.Vector3(
-      -(r*Math.sin(phi)*Math.cos(theta)),
-      r*Math.cos(phi),
-      r*Math.sin(phi)*Math.sin(theta)
-    );
-  }
-
-  fetch("https://ipapi.co/json/")
-    .then(r=>r.json())
-    .then(d=>{
-      const dot=new THREE.Mesh(
-        new THREE.SphereGeometry(0.03,16,16),
-        new THREE.MeshBasicMaterial({ color:0xff00ff })
-      );
-      dot.position.copy(latLng(d.latitude,d.longitude));
-      dot.userData={ label:"Your Location", ip:d.ip };
-      scene.add(dot);
-    });
-
-  function arc(a,b){
-    const curve=new THREE.QuadraticBezierCurve3(a,a.clone().add(b).multiplyScalar(0.5).setLength(1.4),b);
-    const geo=new THREE.BufferGeometry().setFromPoints(curve.getPoints(40));
-    return new THREE.Line(geo,new THREE.LineBasicMaterial({color:0x00ffff,opacity:0.6,transparent:true}));
-  }
-
-  [ arc(latLng(37,-122),latLng(51,0)), arc(latLng(35,139),latLng(1,103)) ]
-    .forEach(l=>scene.add(l));
-
-  const composer=new THREE.EffectComposer(renderer);
-  composer.addPass(new THREE.RenderPass(scene,camera));
-  const scan=new THREE.ShaderPass({
-    uniforms:{tDiffuse:{value:null}},
-    vertexShader:`varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
-    fragmentShader:`uniform sampler2D tDiffuse;varying vec2 vUv;void main(){vec4 c=texture2D(tDiffuse,vUv);c.rgb-=sin(vUv.y*800.0)*0.04;gl_FragColor=c;}`
+let ticks=0;
+const bootTimer=setInterval(()=>{
+  ttys.forEach((t,i)=>{
+    t.textContent+=
+      `[tty${i}] ${sysLines[Math.random()*sysLines.length|0]} :: ${names[Math.random()*names.length|0]}\n`;
+    if(t.textContent.split("\n").length>30){
+      t.textContent=t.textContent.split("\n").slice(-30).join("\n");
+    }
   });
-  composer.addPass(scan);
+  ticks++;
+  if(ticks>90){
+    clearInterval(bootTimer);
+    boot.classList.add("hidden");
+    document.getElementById("ui").classList.remove("hidden");
+    initGlobe();
+  }
+},45);
+
+/* ===========================
+   THREE.JS GLOBE (NORSE STYLE)
+=========================== */
+function initGlobe(){
+  const c=document.getElementById("map");
+  const w=c.clientWidth;
+  const h=c.clientHeight;
+
+  const scene=new THREE.Scene();
+  const cam=new THREE.PerspectiveCamera(45,w/h,0.1,1000);
+  cam.position.z=3;
+
+  const renderer=new THREE.WebGLRenderer({alpha:true,antialias:true});
+  renderer.setSize(w,h);
+  c.appendChild(renderer.domElement);
+
+  const geo=new THREE.SphereGeometry(1,64,64);
+  const mat=new THREE.MeshBasicMaterial({
+    color:0x00ffe1,
+    wireframe:true,
+    transparent:true,
+    opacity:.35
+  });
+  const globe=new THREE.Mesh(geo,mat);
+  scene.add(globe);
+
+  // attack arcs
+  const arcs=[];
+  for(let i=0;i<20;i++){
+    const g=new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(Math.random()*2-1,Math.random()*2-1,Math.random()*2-1),
+      new THREE.Vector3(Math.random()*2-1,Math.random()*2-1,Math.random()*2-1)
+    ]);
+    const m=new THREE.LineBasicMaterial({color:0xff3355});
+    const l=new THREE.Line(g,m);
+    scene.add(l);
+    arcs.push(l);
+  }
 
   function animate(){
     requestAnimationFrame(animate);
-    earth.rotation.y+=0.0008;
-    composer.render();
+    globe.rotation.y+=0.002;
+    arcs.forEach(a=>a.rotation.y+=0.002);
+    renderer.render(scene,cam);
   }
   animate();
 }
