@@ -49,7 +49,7 @@ fetch("/api/auth",{
   headers:{ "Content-Type":"application/json" },
   body:JSON.stringify({ password:pass })
 }).then(r=>{
-  if(!r.ok) location.href="/";
+  if(!r.ok) location.href="/visitors.html";
 });
 </script>
 
