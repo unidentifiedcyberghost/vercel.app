@@ -52,6 +52,26 @@ fetch("/api/auth",{
   if(!r.ok) location.href="/";
 });
 </script>
+<script>
+fetch("/api/visitors")
+  .then(r => r.json())
+  .then(data => {
+    const rows = document.getElementById("rows");
+    data.reverse().forEach(v => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${v.time}</td>
+        <td>${v.ip}</td>
+        <td>${v.country}</td>
+        <td>${v.city}</td>
+        <td>${v.isp}</td>
+        <td>${v.browser}</td>
+      `;
+      rows.appendChild(tr);
+  });
+    });
+</script>
+  
 
 </body>
 </html>
